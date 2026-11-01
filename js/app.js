@@ -22,69 +22,6 @@ const LENSES = [
 
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-/* ---------- storage (per-viewer convenience only) ---------- */
-const store = {
-  get: (k) => { try { return localStorage.getItem(k); } catch { return null; } },
-  set: (k, v) => { try { localStorage.setItem(k, v); } catch { /* storage unavailable: ignore */ } },
-};
-
-/* ---------- theme ---------- */
-function initTheme() {
-  const saved = store.get("theme");
-  if (saved) document.documentElement.dataset.theme = saved;
-  document.getElementById("themeToggle").addEventListener("click", () => {
-    const isDark = document.documentElement.dataset.theme
-      ? document.documentElement.dataset.theme === "dark"
-      : window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const next = isDark ? "light" : "dark";
-    document.documentElement.dataset.theme = next;
-    store.set("theme", next);
-  });
-}
-
-/* ---------- hero ---------- */
-function renderStats() {
-  const stats = [
-    ["15", "days"], ["12", "destinations"], ["~1,600", "km by road"], ["5", "sacred confluences"], ["3,050 m", "highest point"],
-  ];
-  document.getElementById("stats").append(
-    ...stats.map(([v, k]) => el("div", { class: "stat" }, [el("dt", {}, k), el("dd", { "data-value": v }, v)]))
-  );
-  if (!reduceMotion) document.querySelectorAll(".stat dd").forEach(countUp);
-}
-
-/* Count the numeric part of "~1,600" / "3,050 m" up from zero, keeping prefix and suffix. */
-function countUp(node) {
-  const match = node.dataset.value.match(/^(\D*)([\d,]+)(.*)$/);
-  if (!match) return;
-  const [, pre, num, post] = match;
-  const target = Number(num.replace(/,/g, ""));
-  const start = performance.now();
-  const step = (now) => {
-    const t = Math.min((now - start) / 1600, 1);
-    const eased = 1 - Math.pow(1 - t, 3);
-    node.textContent = pre + Math.round(target * eased).toLocaleString("en-IN") + post;
-    if (t < 1) requestAnimationFrame(step);
-  };
-  requestAnimationFrame(step);
-}
-
-function initParallax() {
-  if (reduceMotion) return;
-  const layers = [...document.querySelectorAll(".hero-art [data-depth]")];
-  let ticking = false;
-  window.addEventListener("scroll", () => {
-    if (ticking) return;
-    ticking = true;
-    requestAnimationFrame(() => {
-      const yScroll = Math.min(window.scrollY, 900);
-      layers.forEach((l) => { l.style.transform = `translateY(${yScroll * Number(l.dataset.depth)}px)`; });
-      document.getElementById("topbar").classList.toggle("scrolled", window.scrollY > 40);
-      ticking = false;
-    });
-  }, { passive: true });
-}
-
 /* ---------- timeline ---------- */
 function dayPhoto(d) {
   const nth = DAYS.filter((x) => x.place === d.place && x.day < d.day).length;
@@ -222,9 +159,6 @@ function initReveal() {
 }
 
 function init() {
-  initTheme();
-  renderStats();
-  initParallax();
   const caption = document.getElementById("mapCaption");
   renderRouteMap(document.getElementById("routeMap"), (id) => selectPlace(id, true), (t) => { caption.textContent = t; });
   renderAltitude(document.getElementById("altChart"));
