@@ -13,9 +13,11 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "test": "vitest run",
     "icons": "pwa-assets-generator"
   },
   "dependencies": {
+    "fractional-indexing": "4.0.0",
     "nanoid": "6.0.2",
     "react": "^19.3.1",
     "react-aria-components": "1.22.1",
@@ -42,6 +44,7 @@
     "typescript-eslint": "^8.72.1",
     "vite": "^8.3.5",
     "vite-plugin-pwa": "2.0.0",
+    "vitest": "5.0.5",
     "workbox-window": "7.4.1"
   },
   "allowScripts": {
