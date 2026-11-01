@@ -2,6 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import { applySavedTheme } from "./theme/useTheme";
+import { initServiceWorker } from "./pwa/registerSW";
 
 applySavedTheme();
 
@@ -13,3 +14,5 @@ if (root) {
     </StrictMode>,
   );
 }
+
+initServiceWorker();

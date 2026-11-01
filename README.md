@@ -40,6 +40,14 @@ security headers in `public/_headers`. Builds are written to `.cloudflare/output
 
 Never run `cf init` here — `cloudflare.config.ts` already exists, and auto-configuration would rewrite project files.
 
+## Install & offline (PWA)
+
+The site is an installable PWA (`vite-plugin-pwa`, settings in `pwa.config.ts`). The service worker is only generated in
+production builds, so test it with `npm run build && npm run preview`, not `npm run dev`. Only the app shell is precached;
+offline photos come in E2-S2 (see `docs/plans/epic-2-pwa.md`).
+
+Icons are generated from `public/assets/favicon.svg` with `npm run icons` (config: `pwa-assets.config.ts`) and committed.
+
 ## Editing content
 
 - `src/data/itinerary.js` — the 15 days
