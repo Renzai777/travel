@@ -14,4 +14,6 @@ export type Place = {
   native: string;
   hue: string;
   altitude: number;
+  coords: [number, number];
+  tagline: string;
 };
