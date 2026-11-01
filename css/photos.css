@@ -37,6 +37,7 @@
 }
 .hero-caption::after { content: ""; width: 1px; height: 60px; background: rgb(255 255 255 / .6); }
 .topbar:not(.scrolled) .brand, .topbar:not(.scrolled) nav a { color: #fff; }
+.topbar:not(.scrolled) .topbar-cta { background: rgb(255 255 255 / .15); color: #fff; border-color: rgb(255 255 255 / .4); }
 .topbar:not(.scrolled) .theme-toggle { background: rgb(255 255 255 / .15); color: #fff; border-color: rgb(255 255 255 / .4); }
 .hero .stats { color: var(--ink); }
 

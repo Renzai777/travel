@@ -55,6 +55,12 @@ export function Topbar({ onNavigate }: { onNavigate: (e: MouseEvent<HTMLAnchorEl
           Plan
         </a>
       </nav>
+      <a className="topbar-cta" href="/w" onClick={onNavigate} aria-label="Trip workspace">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M3 6a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+        </svg>
+        <span>Trip workspace</span>
+      </a>
       <button className="theme-toggle" id="themeToggle" type="button" aria-label="Toggle dark mode" onClick={toggle}>
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" />
