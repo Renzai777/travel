@@ -1,9 +1,10 @@
-import { useRef, useState, type KeyboardEvent, type MouseEvent } from "react";
+import { useState, type MouseEvent } from "react";
 import { Button } from "react-aria-components";
 import type * as Y from "yjs";
 import { appNavigate } from "../routing/location";
 import type { Member } from "./device";
 import { MoveDialog } from "./MoveDialog";
+import { NameDialog } from "./NameDialog";
 import { ROOT, createFolder, pathTo, renameNode, type FolderTree } from "./tree";
 import { folderPath } from "./wsRoutes";
 
@@ -16,11 +17,11 @@ export interface FolderViewProps {
 }
 
 export function FolderView({ doc, wsId, tree, folderId, member }: FolderViewProps) {
+  const [isNewFolderOpen, setIsNewFolderOpen] = useState(false);
+  const [isRenameOpen, setIsRenameOpen] = useState(false);
   const [isMoveDialogOpen, setIsMoveDialogOpen] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [draftTitle, setDraftTitle] = useState("");
-  const cancelBlurRef = useRef(false);
 
+  const actor = { memberId: member?.id ?? "unknown" };
   const currentFolder = folderId ? tree.byId.get(folderId) : null;
   const headingTitle = currentFolder ? currentFolder.title : "All files";
   const children = folderId ? (currentFolder?.children ?? []) : tree.roots;
@@ -30,38 +31,6 @@ export function FolderView({ doc, wsId, tree, folderId, member }: FolderViewProp
     if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     e.preventDefault();
     appNavigate(href);
-  };
-
-  const handleCreateFolder = () => {
-    const actor = { memberId: member?.id ?? "unknown" };
-    createFolder(doc, folderId ?? ROOT, "New folder", actor);
-  };
-
-  const startRename = () => {
-    if (!folderId || !currentFolder) return;
-    setDraftTitle(currentFolder.title);
-    setIsEditing(true);
-  };
-
-  const commitTitle = () => {
-    if (cancelBlurRef.current) {
-      cancelBlurRef.current = false;
-      setIsEditing(false);
-      return;
-    }
-    if (folderId && draftTitle.trim()) {
-      renameNode(doc, folderId, draftTitle.trim(), { memberId: member?.id ?? "unknown" });
-    }
-    setIsEditing(false);
-  };
-
-  const handleTitleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      commitTitle();
-    } else if (e.key === "Escape") {
-      cancelBlurRef.current = true;
-      setIsEditing(false);
-    }
   };
 
   return (
@@ -94,28 +63,16 @@ export function FolderView({ doc, wsId, tree, folderId, member }: FolderViewProp
 
       <div className="ws-folder-view-header">
         <div className="ws-folder-view-title-area">
-          {isEditing && folderId ? (
-            <input
-              autoFocus
-              className="ws-title-input"
-              value={draftTitle}
-              onChange={(e) => setDraftTitle(e.target.value)}
-              onBlur={commitTitle}
-              onKeyDown={handleTitleKeyDown}
-              aria-label="Folder title"
-            />
-          ) : (
-            <h2 className="ws-folder-heading">{headingTitle}</h2>
-          )}
+          <h2 className="ws-folder-heading">{headingTitle}</h2>
         </div>
 
         <div className="ws-folder-view-actions">
-          <Button className="ws-button ws-button-primary" onPress={handleCreateFolder}>
+          <Button className="ws-button ws-button-primary" onPress={() => setIsNewFolderOpen(true)}>
             New folder
           </Button>
           {folderId !== null && (
             <>
-              <Button className="ws-button ws-button-secondary" onPress={startRename}>
+              <Button className="ws-button ws-button-secondary" onPress={() => setIsRenameOpen(true)}>
                 Rename
               </Button>
               <Button className="ws-button ws-button-secondary" onPress={() => setIsMoveDialogOpen(true)}>
@@ -152,6 +109,30 @@ export function FolderView({ doc, wsId, tree, folderId, member }: FolderViewProp
             </a>
           ))}
         </div>
+      )}
+
+      <NameDialog
+        isOpen={isNewFolderOpen}
+        onOpenChange={setIsNewFolderOpen}
+        title="New folder"
+        submitLabel="Create"
+        initialValue=""
+        onSubmit={(name) => {
+          createFolder(doc, folderId ?? ROOT, name, actor);
+        }}
+      />
+
+      {folderId !== null && (
+        <NameDialog
+          isOpen={isRenameOpen}
+          onOpenChange={setIsRenameOpen}
+          title="Rename folder"
+          submitLabel="Save"
+          initialValue={currentFolder?.title ?? ""}
+          onSubmit={(name) => {
+            renameNode(doc, folderId, name, actor);
+          }}
+        />
       )}
 
       {folderId !== null && (

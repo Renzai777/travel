@@ -1,14 +1,8 @@
-import { useCallback, useMemo, useRef, useState, type KeyboardEvent, type MouseEvent } from "react";
+import { useCallback, useMemo, useRef, useState, type MouseEvent } from "react";
 import {
   Button,
   Collection,
   DropIndicator,
-  Input,
-  Menu,
-  MenuItem,
-  MenuTrigger,
-  Popover,
-  TextField,
   Tree,
   TreeItem,
   TreeItemContent,
@@ -19,18 +13,7 @@ import type * as Y from "yjs";
 import { store } from "../lib/storage";
 import { appNavigate } from "../routing/location";
 import type { Member } from "./device";
-import { MoveDialog } from "./MoveDialog";
-import {
-  RECOVERED,
-  ROOT,
-  createFolder,
-  isSelfOrAncestor,
-  moveNodes,
-  pathTo,
-  renameNode,
-  type FolderNode,
-  type FolderTree,
-} from "./tree";
+import { RECOVERED, isSelfOrAncestor, moveNodes, pathTo, type FolderNode, type FolderTree } from "./tree";
 import { folderPath } from "./wsRoutes";
 
 export interface FolderSidebarProps {
@@ -82,60 +65,6 @@ export function FolderSidebar({ doc, wsId, tree, currentFolderId, member }: Fold
       store.set(storageKey, JSON.stringify([...next]));
     }
   }
-
-  // Inline rename state
-  const [renamingId, setRenamingId] = useState<string | null>(null);
-  const [renameDraft, setRenameDraft] = useState<string>("");
-  const cancelRenameBlurRef = useRef(false);
-
-  const startRename = (id: string, currentTitle: string) => {
-    setRenamingId(id);
-    setRenameDraft(currentTitle);
-  };
-
-  const commitRename = (id: string) => {
-    if (cancelRenameBlurRef.current) {
-      cancelRenameBlurRef.current = false;
-      setRenamingId(null);
-      return;
-    }
-    const clean = renameDraft.trim();
-    if (clean) {
-      renameNode(doc, id, clean, { memberId: member?.id ?? "unknown" });
-    }
-    setRenamingId(null);
-  };
-
-  const handleRenameKeyDown = (e: KeyboardEvent<HTMLInputElement>, id: string) => {
-    if (e.key === "Enter") {
-      e.stopPropagation();
-      commitRename(id);
-      e.currentTarget.blur();
-    } else if (e.key === "Escape") {
-      e.stopPropagation();
-      cancelRenameBlurRef.current = true;
-      setRenamingId(null);
-      e.currentTarget.blur();
-    }
-  };
-
-  const handleNewFolder = (parentId: string) => {
-    const actor = { memberId: member?.id ?? "unknown" };
-    const id = createFolder(doc, parentId, "New folder", actor);
-    if (parentId !== ROOT) {
-      setExpandedKeys((prev) => {
-        const next = new Set(prev);
-        next.add(parentId);
-        store.set(storageKey, JSON.stringify([...next]));
-        return next;
-      });
-    }
-    startRename(id, "New folder");
-  };
-
-  // Move dialog state
-  const [isMoveDialogOpen, setIsMoveDialogOpen] = useState(false);
-  const [moveNodeIds, setMoveNodeIds] = useState<string[]>([]);
 
   // Drag and drop tracking
   const draggedKeysRef = useRef<Set<string>>(new Set());
@@ -256,62 +185,7 @@ export function FolderSidebar({ doc, wsId, tree, currentFolderId, member }: Fold
             <span className="ws-folder-icon" aria-hidden="true">
               📁
             </span>
-            {renamingId === node.id ? (
-              <TextField
-                aria-label="Folder name"
-                className="ws-inline-rename-field"
-                value={renameDraft}
-                onChange={setRenameDraft}
-              >
-                <Input
-                  ref={(el) => {
-                    if (el) {
-                      el.focus();
-                      el.select();
-                    }
-                  }}
-                  className="ws-rename-input"
-                  maxLength={120}
-                  onClick={(e) => e.stopPropagation()}
-                  onBlur={() => commitRename(node.id)}
-                  onKeyDown={(e) => handleRenameKeyDown(e, node.id)}
-                />
-              </TextField>
-            ) : (
-              <span className="ws-tree-title">{node.title}</span>
-            )}
-            <div className="ws-tree-actions" onClick={(e) => e.stopPropagation()}>
-              <MenuTrigger>
-                <Button className="ws-tree-menu-button" aria-label={`Actions for ${node.title}`}>
-                  …
-                </Button>
-                <Popover className="react-aria-Popover ws-menu-popover">
-                  <Menu
-                    className="react-aria-Menu ws-menu"
-                    onAction={(action) => {
-                      if (action === "rename") {
-                        startRename(node.id, node.title);
-                      } else if (action === "subfolder") {
-                        handleNewFolder(node.id);
-                      } else if (action === "move") {
-                        setMoveNodeIds([node.id]);
-                        setIsMoveDialogOpen(true);
-                      }
-                    }}
-                  >
-                    <MenuItem id="rename" className="react-aria-MenuItem ws-menu-item">
-                      Rename
-                    </MenuItem>
-                    <MenuItem id="subfolder" className="react-aria-MenuItem ws-menu-item">
-                      New subfolder
-                    </MenuItem>
-                    <MenuItem id="move" className="react-aria-MenuItem ws-menu-item">
-                      Move to…
-                    </MenuItem>
-                  </Menu>
-                </Popover>
-              </MenuTrigger>
-            </div>
+            <span className="ws-tree-title">{node.title}</span>
           </div>
         )}
       </TreeItemContent>
@@ -323,9 +197,6 @@ export function FolderSidebar({ doc, wsId, tree, currentFolderId, member }: Fold
     <div className="ws-aside-section ws-folders-sidebar">
       <div className="ws-folders-header">
         <h3 className="ws-section-title">Folders</h3>
-        <Button className="ws-icon-button" aria-label="New folder" onPress={() => handleNewFolder(ROOT)}>
-          +
-        </Button>
       </div>
 
       <nav aria-label="Root folder" className="ws-root-link-container">
@@ -377,15 +248,6 @@ export function FolderSidebar({ doc, wsId, tree, currentFolderId, member }: Fold
           </Tree>
         </div>
       )}
-
-      <MoveDialog
-        isOpen={isMoveDialogOpen}
-        onOpenChange={setIsMoveDialogOpen}
-        doc={doc}
-        tree={tree}
-        nodeIds={moveNodeIds}
-        member={member}
-      />
     </div>
   );
 }
