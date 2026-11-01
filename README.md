@@ -10,7 +10,7 @@ npm run dev -- --host    # http://localhost:5173 + a Network: link for colleague
 npm run build && npm run preview -- --host   # production build
 ```
 
-Colleagues on the same network open the printed `Network:` link (allow Node through your firewall if prompted).
+Colleagues on the same network open the printed `Network:` link (allow Node through your firewall if prompted). `npm run preview` serves the production build's static files; Cloudflare-specific behaviour (headers, SPA fallback) is checked with `npm run deploy:check` and in PR previews.
 
 ## Photos
 
@@ -18,10 +18,27 @@ Colleagues on the same network open the printed `Network:` link (allow Node thro
 and regenerates `src/data/photos.js` (captions + attribution shown in the footer). Edit the `WANTED` list to change them;
 a query of the form `File:Exact name.jpg` pins a specific Commons file.
 
-## Deploy to Vercel
+## Hosting
 
-- **CLI:** `npm i -g vercel` then run `vercel` in this folder (settings come from vercel.json: Vite, `npm run build`, output `dist`). `vercel --prod` to publish.
-- **Git:** push this folder to GitHub, then "Add New Project" on vercel.com and import the repo — no settings needed.
+| Where                                                                                                 | What                               | Source             |
+| ----------------------------------------------------------------------------------------------------- | ---------------------------------- | ------------------ |
+| **Cloudflare** — https://plains-to-peaks.vipulsingh161.workers.dev (Workers static assets, free plan) | The React app                      | `main`             |
+| **Vercel** — https://plains-to-peaks.vercel.app/                                                      | The original HTML/JS site (frozen) | `feature/starting` |
+
+Do not deploy `main` to Vercel; `vercel.json` is kept only for the legacy site.
+
+## Deploy to Cloudflare
+
+Configuration lives in `cloudflare.config.ts` (read by the [`cf` CLI](https://developers.cloudflare.com/cf/), beta) and
+security headers in `public/_headers`. Builds are written to `.cloudflare/output/`.
+
+- **Check:** `npm run deploy:check` builds and validates the deploy without uploading anything.
+- **Deploy from your machine:** `npx cf auth login` once, then `npm run deploy`.
+- **CI** (`.github/workflows/cloudflare.yml`): every pull request is type-checked, linted, built and validated, and PRs from
+  this repo get a preview URL (see the job summary). Every push to `main` deploys to production. Needs the repository
+  secrets `CLOUDFLARE_API_TOKEN` (template "Edit Cloudflare Workers") and `CLOUDFLARE_ACCOUNT_ID`.
+
+Never run `cf init` here — `cloudflare.config.ts` already exists, and auto-configuration would rewrite project files.
 
 ## Editing content
 
