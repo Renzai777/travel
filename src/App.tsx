@@ -10,6 +10,7 @@ import { Food } from "./guide/Food";
 import { Plan } from "./guide/Plan";
 import { Footer } from "./guide/Footer";
 import { usePlaceSelection } from "./guide/usePlaceSelection";
+import { UpdateToast } from "./pwa/UpdateToast";
 
 export default function App() {
   const { place, lens, select } = usePlaceSelection();
@@ -27,6 +28,7 @@ export default function App() {
         <Plan />
       </main>
       <Footer />
+      <UpdateToast />
     </LightboxProvider>
   );
 }

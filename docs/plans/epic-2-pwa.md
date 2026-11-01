@@ -83,5 +83,5 @@ agy (files): `src/pwa/UpdateToast.tsx` with `useRegisterSW` (`virtual:pwa-regist
 Acceptance:
 
 - [ ] First install: only "Ready to work offline", no update toast; a normal reload with no new version shows nothing
-- [ ] Build A open → deploy build B → toast appears → Reload → B's content; "Later" hides it until the next check
+- [ ] Build A open → deploy build B → toast appears → Reload → B's content; "Later" hides it until the next page load (the waiting update is offered again)
 - [ ] Two tabs: reloading one activates the update; the other doesn't break (shows the toast or reloads cleanly)
