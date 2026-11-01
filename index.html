@@ -16,44 +16,7 @@
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
-
-  <header class="topbar" id="topbar">
-    <a class="brand" href="#top">Plains <span>→</span> Peaks</a>
-    <nav aria-label="Main navigation">
-      <a href="#route">Route</a>
-      <a href="#days">Day by day</a>
-      <a href="#places">Places</a>
-      <a href="#food">Food</a>
-      <a href="#plan">Plan</a>
-    </nav>
-    <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle dark mode">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
-    </button>
-  </header>
-
-  <section class="hero" id="top" aria-labelledby="hero-heading">
-    <div class="hero-slides" id="heroSlides" aria-hidden="true"></div>
-    <div class="hero-shade" aria-hidden="true"></div>
-    <svg class="hero-art" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
-      <g data-depth="0.18"><path style="fill:var(--paper)" opacity=".35" d="M0 760 L120 700 L260 735 L400 650 L520 720 L650 670 L780 730 L930 650 L1080 720 L1200 680 L1320 730 L1440 690 L1440 900 L0 900Z"/></g>
-      <g data-depth="0.3"><path style="fill:var(--paper)" d="M0 830 C160 790 300 815 430 800 C600 780 700 830 860 808 C1010 788 1150 830 1290 806 C1360 795 1410 805 1440 812 L1440 900 L0 900Z"/></g>
-    </svg>
-    <div class="hero-copy">
-      <p class="eyebrow">A 15-day journey · Pune to the Himalaya</p>
-      <h1 id="hero-heading">From the Yamuna's plains<br /><em>to Nanda Devi's snows</em></h1>
-      <p class="lede">Krishna's Braj, Mughal Delhi, the Ganga's holy gateways, the Panch Prayag confluences, the meadows of Auli and the lakes of Kumaon — climbing from 170 m to 3,000 m.</p>
-      <div class="hero-cta">
-        <a class="btn btn-primary" href="#days">See the 15 days</a>
-        <a class="btn btn-ghost" href="#places">Explore 12 places</a>
-      </div>
-    </div>
-    <p class="hero-caption" id="heroCaption" aria-live="polite"></p>
-    <dl class="stats" id="stats"></dl>
-  </section>
-
-  <section class="filmstrip" aria-label="Postcards from the route">
-    <div class="film-track" id="filmTrack"></div>
-  </section>
+  <div id="root"></div>
 
   <main id="main">
     <section class="section route" id="route" aria-labelledby="route-heading">
@@ -178,7 +141,6 @@
     <button type="button" class="lb-btn lb-next" id="lbNext" aria-label="Next photo">&#8594;</button>
     <button type="button" class="lb-btn lb-close" id="lbClose" aria-label="Close">&#10005;</button>
   </dialog>
-  <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
 </body>
 </html>

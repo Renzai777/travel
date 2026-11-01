@@ -1,4 +1,14 @@
-// React shell. Guide sections move here story by story (E1-S2..S4); the legacy js/app.js renders the page until then.
+// React shell. Topbar/Hero/Filmstrip are React (E1-S2); js/app.js still renders the sections below until E1-S4.
+import { Topbar } from "./guide/Topbar";
+import { Hero } from "./guide/Hero";
+import { Filmstrip } from "./guide/Filmstrip";
+
 export default function App() {
-  return null;
+  return (
+    <>
+      <Topbar />
+      <Hero />
+      <Filmstrip />
+    </>
+  );
 }
