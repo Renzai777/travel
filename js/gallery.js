@@ -1,7 +1,7 @@
 /* Photo-driven pieces: hero slideshow, postcard filmstrip, food grid, lightbox, credits. */
 import { el } from "./dom.js";
-import { PHOTOS, photosFor } from "./photos.js";
-import { PLACES } from "./places.js";
+import { PHOTOS, photosFor } from "../src/data/photos.js";
+import { PLACES } from "../src/data/places.js";
 
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const byKey = (key) => PHOTOS.find((p) => p.key === key);
