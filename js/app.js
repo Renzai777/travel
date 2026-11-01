@@ -2,7 +2,6 @@ import { el, formatInr } from "./dom.js";
 import { PLACES, placeById } from "../src/data/places.js";
 import { DAYS } from "../src/data/itinerary.js";
 import { SEASONS, BUDGET, PACKING, ALERTS, SOURCES } from "../src/data/planning.js";
-import { renderRouteMap, renderAltitude } from "./charts.js";
 import { initGallery, photo, zoomable } from "./gallery.js";
 import { photosFor } from "../src/data/photos.js";
 
@@ -159,9 +158,8 @@ function initReveal() {
 }
 
 function init() {
-  const caption = document.getElementById("mapCaption");
-  renderRouteMap(document.getElementById("routeMap"), (id) => selectPlace(id, true), (t) => { caption.textContent = t; });
-  renderAltitude(document.getElementById("altChart"));
+  // Bridge for the React route map (E1-S3); removed in E1-S4.
+  window.addEventListener("place:select", (e) => selectPlace(e.detail.id, e.detail.scroll));
   renderTimeline();
   renderExplorer();
   renderPlanning();
