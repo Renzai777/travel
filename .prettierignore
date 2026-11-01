@@ -3,6 +3,5 @@ node_modules
 public
 package-lock.json
 src/data
-js
 css
 index.html
