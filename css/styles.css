@@ -67,6 +67,7 @@ a { color: var(--accent); }
 :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
 .skip { position: absolute; left: -999px; top: 8px; }
 .skip:focus { left: 8px; z-index: 200; background: var(--card); padding: 8px 12px; }
+#main:focus, h2[tabindex="-1"]:focus, h1[tabindex="-1"]:focus { outline: none; }
 .eyebrow {
   font: 700 .78rem/1 var(--font-body); letter-spacing: .18em; text-transform: uppercase;
   color: var(--accent); margin: 0 0 1rem;

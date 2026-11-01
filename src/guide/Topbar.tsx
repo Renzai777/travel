@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type MouseEvent } from "react";
 import { useTheme } from "../theme/useTheme";
 
-export function Topbar() {
+export function Topbar({ onNavigate }: { onNavigate: (e: MouseEvent<HTMLAnchorElement>) => void }) {
   const { toggle } = useTheme();
   const [scrolled, setScrolled] = useState(false);
 
@@ -35,15 +35,25 @@ export function Topbar() {
 
   return (
     <header className={`topbar${scrolled ? " scrolled" : ""}`} id="topbar">
-      <a className="brand" href="#top">
+      <a className="brand" href="/" onClick={onNavigate}>
         Plains <span>→</span> Peaks
       </a>
       <nav aria-label="Main navigation">
-        <a href="#route">Route</a>
-        <a href="#days">Day by day</a>
-        <a href="#places">Places</a>
-        <a href="#food">Food</a>
-        <a href="#plan">Plan</a>
+        <a href="/route" onClick={onNavigate}>
+          Route
+        </a>
+        <a href="/days" onClick={onNavigate}>
+          Day by day
+        </a>
+        <a href="/places" onClick={onNavigate}>
+          Places
+        </a>
+        <a href="/food" onClick={onNavigate}>
+          Food
+        </a>
+        <a href="/plan" onClick={onNavigate}>
+          Plan
+        </a>
       </nav>
       <button className="theme-toggle" id="themeToggle" type="button" aria-label="Toggle dark mode" onClick={toggle}>
         <svg viewBox="0 0 24 24" aria-hidden="true">

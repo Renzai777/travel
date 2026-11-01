@@ -50,6 +50,12 @@ Icons are generated from `public/assets/favicon.svg` with `npm run icons` (confi
 
 When a new version is deployed, open pages show a **"A new version of the guide is available — Reload / Later"** toast (checked hourly and whenever the tab becomes visible). First-time visitors see a short **"Ready to work offline."** instead.
 
+## URLs
+
+Each section has its own URL: `/route`, `/days`, `/places` (or `/places/<place>`, e.g. `/places/auli`), `/food`, `/plan`. The address bar
+follows your scrolling, links can be shared, and old `/#plan`-style links redirect. `/board/…` is reserved for the trip board (Epic 3).
+Routing lives in `src/routing/` (no router library).
+
 ## Editing content
 
 - `src/data/itinerary.js` — the 15 days
