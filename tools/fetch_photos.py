@@ -139,7 +139,7 @@ def main():
             download(pick["thumb"], dest)
         time.sleep(1.5)
         photos.append({
-            "key": key, "src": f"assets/img/{key}.jpg", "caption": caption, "ratio": pick["ratio"],
+            "key": key, "src": f"/assets/img/{key}.jpg", "caption": caption, "ratio": pick["ratio"],
             "credit": pick["artist"][:80], "license": pick["license"], "source": pick["page"],
             "file": pick["title"],
         })

@@ -2,7 +2,7 @@
 export const PHOTOS = [
   {
     "key": "hero-1",
-    "src": "assets/img/hero-1.jpg",
+    "src": "/assets/img/hero-1.jpg",
     "caption": "Nanda Devi rising above the Garhwal Himalaya",
     "ratio": 1.5,
     "credit": "Ashutosh Mohan",
@@ -12,7 +12,7 @@ export const PHOTOS = [
   },
   {
     "key": "hero-2",
-    "src": "assets/img/hero-2.jpg",
+    "src": "/assets/img/hero-2.jpg",
     "caption": "Snow slopes of Auli",
     "ratio": 1.494,
     "credit": "User: (WT-shared) Karan44 at wts wikivoyage",
@@ -22,7 +22,7 @@ export const PHOTOS = [
   },
   {
     "key": "mathura-1",
-    "src": "assets/img/mathura-1.jpg",
+    "src": "/assets/img/mathura-1.jpg",
     "caption": "Vishram Ghat on the Yamuna",
     "ratio": 1.333,
     "credit": "Aliva Sahoo",
@@ -32,7 +32,7 @@ export const PHOTOS = [
   },
   {
     "key": "mathura-2",
-    "src": "assets/img/mathura-2.jpg",
+    "src": "/assets/img/mathura-2.jpg",
     "caption": "The Yamuna at Mathura",
     "ratio": 0.75,
     "credit": "Bakeil",
@@ -42,7 +42,7 @@ export const PHOTOS = [
   },
   {
     "key": "mathura-3",
-    "src": "assets/img/mathura-3.jpg",
+    "src": "/assets/img/mathura-3.jpg",
     "caption": "Krishna Janmabhoomi, Mathura",
     "ratio": 1.5,
     "credit": "Diego Delso",
@@ -52,7 +52,7 @@ export const PHOTOS = [
   },
   {
     "key": "vrindavan-1",
-    "src": "assets/img/vrindavan-1.jpg",
+    "src": "/assets/img/vrindavan-1.jpg",
     "caption": "Prem Mandir lit up at night",
     "ratio": 1.333,
     "credit": "Aliva Sahoo",
@@ -62,7 +62,7 @@ export const PHOTOS = [
   },
   {
     "key": "vrindavan-2",
-    "src": "assets/img/vrindavan-2.jpg",
+    "src": "/assets/img/vrindavan-2.jpg",
     "caption": "Banke Bihari Temple",
     "ratio": 1.333,
     "credit": "Guptaele",
@@ -72,7 +72,7 @@ export const PHOTOS = [
   },
   {
     "key": "vrindavan-3",
-    "src": "assets/img/vrindavan-3.jpg",
+    "src": "/assets/img/vrindavan-3.jpg",
     "caption": "Keshi Ghat on the Yamuna",
     "ratio": 1.333,
     "credit": "Hano",
@@ -82,7 +82,7 @@ export const PHOTOS = [
   },
   {
     "key": "delhi-1",
-    "src": "assets/img/delhi-1.jpg",
+    "src": "/assets/img/delhi-1.jpg",
     "caption": "Humayun's Tomb",
     "ratio": 2.961,
     "credit": "Muhammad Mahdi Karim",
@@ -92,7 +92,7 @@ export const PHOTOS = [
   },
   {
     "key": "delhi-2",
-    "src": "assets/img/delhi-2.jpg",
+    "src": "/assets/img/delhi-2.jpg",
     "caption": "Jama Masjid, Old Delhi",
     "ratio": 1.41,
     "credit": "Muhammad Mahdi Karim",
@@ -102,7 +102,7 @@ export const PHOTOS = [
   },
   {
     "key": "delhi-3",
-    "src": "assets/img/delhi-3.jpg",
+    "src": "/assets/img/delhi-3.jpg",
     "caption": "Qutub Minar",
     "ratio": 0.75,
     "credit": "A.Savin",
@@ -112,7 +112,7 @@ export const PHOTOS = [
   },
   {
     "key": "dehradun-1",
-    "src": "assets/img/dehradun-1.jpg",
+    "src": "/assets/img/dehradun-1.jpg",
     "caption": "Forest Research Institute",
     "ratio": 2.609,
     "credit": "Torarne",
@@ -122,7 +122,7 @@ export const PHOTOS = [
   },
   {
     "key": "dehradun-2",
-    "src": "assets/img/dehradun-2.jpg",
+    "src": "/assets/img/dehradun-2.jpg",
     "caption": "Mindrolling Monastery stupa",
     "ratio": 1.333,
     "credit": "DesiBoy101",
@@ -132,7 +132,7 @@ export const PHOTOS = [
   },
   {
     "key": "dehradun-3",
-    "src": "assets/img/dehradun-3.jpg",
+    "src": "/assets/img/dehradun-3.jpg",
     "caption": "Robber's Cave (Guchhupani)",
     "ratio": 1.778,
     "credit": "Daniel Romanson",
@@ -142,7 +142,7 @@ export const PHOTOS = [
   },
   {
     "key": "haridwar-1",
-    "src": "assets/img/haridwar-1.jpg",
+    "src": "/assets/img/haridwar-1.jpg",
     "caption": "Ganga Aarti at Har Ki Pauri",
     "ratio": 1.337,
     "credit": "Ramesh Lalwani",
@@ -152,7 +152,7 @@ export const PHOTOS = [
   },
   {
     "key": "haridwar-2",
-    "src": "assets/img/haridwar-2.jpg",
+    "src": "/assets/img/haridwar-2.jpg",
     "caption": "The ghats of Haridwar",
     "ratio": 1.5,
     "credit": "Thakur Dalip Singh",
@@ -162,7 +162,7 @@ export const PHOTOS = [
   },
   {
     "key": "haridwar-3",
-    "src": "assets/img/haridwar-3.jpg",
+    "src": "/assets/img/haridwar-3.jpg",
     "caption": "Ganga at Haridwar",
     "ratio": 1.504,
     "credit": "Subhrajyoti07",
@@ -172,7 +172,7 @@ export const PHOTOS = [
   },
   {
     "key": "rishikesh-1",
-    "src": "assets/img/rishikesh-1.jpg",
+    "src": "/assets/img/rishikesh-1.jpg",
     "caption": "Ram Jhula over the Ganga",
     "ratio": 1.5,
     "credit": "Paradise Chronicle",
@@ -182,7 +182,7 @@ export const PHOTOS = [
   },
   {
     "key": "rishikesh-2",
-    "src": "assets/img/rishikesh-2.jpg",
+    "src": "/assets/img/rishikesh-2.jpg",
     "caption": "Lakshman Jhula, Rishikesh",
     "ratio": 1.333,
     "credit": "McKay Savage from London, UK",
@@ -192,7 +192,7 @@ export const PHOTOS = [
   },
   {
     "key": "rishikesh-3",
-    "src": "assets/img/rishikesh-3.jpg",
+    "src": "/assets/img/rishikesh-3.jpg",
     "caption": "Rafting on the Ganga",
     "ratio": 1.494,
     "credit": "Arpan Mahajan",
@@ -202,7 +202,7 @@ export const PHOTOS = [
   },
   {
     "key": "devprayag-1",
-    "src": "assets/img/devprayag-1.jpg",
+    "src": "/assets/img/devprayag-1.jpg",
     "caption": "Bhagirathi meets Alaknanda at Devprayag",
     "ratio": 1.5,
     "credit": "Ashishjalan8",
@@ -212,7 +212,7 @@ export const PHOTOS = [
   },
   {
     "key": "devprayag-2",
-    "src": "assets/img/devprayag-2.jpg",
+    "src": "/assets/img/devprayag-2.jpg",
     "caption": "Devprayag town",
     "ratio": 1.333,
     "credit": "Aniket Singh",
@@ -222,7 +222,7 @@ export const PHOTOS = [
   },
   {
     "key": "devprayag-3",
-    "src": "assets/img/devprayag-3.jpg",
+    "src": "/assets/img/devprayag-3.jpg",
     "caption": "Rudraprayag confluence",
     "ratio": 1.504,
     "credit": "Vvnataraj",
@@ -232,7 +232,7 @@ export const PHOTOS = [
   },
   {
     "key": "auli-1",
-    "src": "assets/img/auli-1.jpg",
+    "src": "/assets/img/auli-1.jpg",
     "caption": "Auli's slopes in winter",
     "ratio": 1.779,
     "credit": "Dinesh Valke from Thane, India",
@@ -242,7 +242,7 @@ export const PHOTOS = [
   },
   {
     "key": "auli-2",
-    "src": "assets/img/auli-2.jpg",
+    "src": "/assets/img/auli-2.jpg",
     "caption": "Himalayan view from Auli",
     "ratio": 1.497,
     "credit": "Vaibhav78545",
@@ -252,7 +252,7 @@ export const PHOTOS = [
   },
   {
     "key": "auli-3",
-    "src": "assets/img/auli-3.jpg",
+    "src": "/assets/img/auli-3.jpg",
     "caption": "Joshimath",
     "ratio": 1.333,
     "credit": "christian0702",
@@ -262,7 +262,7 @@ export const PHOTOS = [
   },
   {
     "key": "kausani-1",
-    "src": "assets/img/kausani-1.jpg",
+    "src": "/assets/img/kausani-1.jpg",
     "caption": "Himalayan panorama from Kausani",
     "ratio": 1.66,
     "credit": "Abhijit Kar Gupta from Kolkata, India",
@@ -272,7 +272,7 @@ export const PHOTOS = [
   },
   {
     "key": "kausani-2",
-    "src": "assets/img/kausani-2.jpg",
+    "src": "/assets/img/kausani-2.jpg",
     "caption": "Baijnath temples",
     "ratio": 1.333,
     "credit": "Yann (talk)",
@@ -282,7 +282,7 @@ export const PHOTOS = [
   },
   {
     "key": "kausani-3",
-    "src": "assets/img/kausani-3.jpg",
+    "src": "/assets/img/kausani-3.jpg",
     "caption": "Kausani hills",
     "ratio": 1.333,
     "credit": "Anshumandatta at English Wikipedia",
@@ -292,7 +292,7 @@ export const PHOTOS = [
   },
   {
     "key": "almora-1",
-    "src": "assets/img/almora-1.jpg",
+    "src": "/assets/img/almora-1.jpg",
     "caption": "Almora on its ridge",
     "ratio": 1.511,
     "credit": "Travelling Slacker from Mumbai, India",
@@ -302,7 +302,7 @@ export const PHOTOS = [
   },
   {
     "key": "almora-2",
-    "src": "assets/img/almora-2.jpg",
+    "src": "/assets/img/almora-2.jpg",
     "caption": "Jageshwar temple complex",
     "ratio": 1.333,
     "credit": "Varun Shiv Kapur from New Delhi, India",
@@ -312,7 +312,7 @@ export const PHOTOS = [
   },
   {
     "key": "almora-3",
-    "src": "assets/img/almora-3.jpg",
+    "src": "/assets/img/almora-3.jpg",
     "caption": "Kumaon hills near Almora",
     "ratio": 1.779,
     "credit": "Travelling Slacker from Mumbai, India",
@@ -322,7 +322,7 @@ export const PHOTOS = [
   },
   {
     "key": "kainchi-1",
-    "src": "assets/img/kainchi-1.jpg",
+    "src": "/assets/img/kainchi-1.jpg",
     "caption": "Kainchi Dham",
     "ratio": 1.334,
     "credit": "25 Cents FC",
@@ -332,7 +332,7 @@ export const PHOTOS = [
   },
   {
     "key": "kainchi-2",
-    "src": "assets/img/kainchi-2.jpg",
+    "src": "/assets/img/kainchi-2.jpg",
     "caption": "Bhowali valley",
     "ratio": 1.333,
     "credit": "ArmouredCyborg",
@@ -342,7 +342,7 @@ export const PHOTOS = [
   },
   {
     "key": "kainchi-3",
-    "src": "assets/img/kainchi-3.jpg",
+    "src": "/assets/img/kainchi-3.jpg",
     "caption": "Kumaon road",
     "ratio": 1.333,
     "credit": "PrakharPachaury",
@@ -352,7 +352,7 @@ export const PHOTOS = [
   },
   {
     "key": "nainital-1",
-    "src": "assets/img/nainital-1.jpg",
+    "src": "/assets/img/nainital-1.jpg",
     "caption": "Naini Lake",
     "ratio": 1.5,
     "credit": "Praveen Singh Bisht",
@@ -362,7 +362,7 @@ export const PHOTOS = [
   },
   {
     "key": "nainital-2",
-    "src": "assets/img/nainital-2.jpg",
+    "src": "/assets/img/nainital-2.jpg",
     "caption": "Boats on Naini Lake",
     "ratio": 1.333,
     "credit": "Slyronit",
@@ -372,7 +372,7 @@ export const PHOTOS = [
   },
   {
     "key": "nainital-3",
-    "src": "assets/img/nainital-3.jpg",
+    "src": "/assets/img/nainital-3.jpg",
     "caption": "Nainital Mall Road",
     "ratio": 1.494,
     "credit": "Sanjoy",
@@ -382,7 +382,7 @@ export const PHOTOS = [
   },
   {
     "key": "food-1",
-    "src": "assets/img/food-1.jpg",
+    "src": "/assets/img/food-1.jpg",
     "caption": "Jalebi",
     "ratio": 1.474,
     "credit": "TAPAS KUMAR HALDER",
@@ -392,7 +392,7 @@ export const PHOTOS = [
   },
   {
     "key": "food-2",
-    "src": "assets/img/food-2.jpg",
+    "src": "/assets/img/food-2.jpg",
     "caption": "Chole bhature",
     "ratio": 1.333,
     "credit": "Gannu03",
@@ -402,7 +402,7 @@ export const PHOTOS = [
   },
   {
     "key": "food-3",
-    "src": "assets/img/food-3.jpg",
+    "src": "/assets/img/food-3.jpg",
     "caption": "Aloo paratha",
     "ratio": 1.229,
     "credit": "Mahi Tatavarty",
@@ -412,7 +412,7 @@ export const PHOTOS = [
   },
   {
     "key": "food-4",
-    "src": "assets/img/food-4.jpg",
+    "src": "/assets/img/food-4.jpg",
     "caption": "Momos",
     "ratio": 1.5,
     "credit": "TAPAS KUMAR HALDER",
@@ -422,7 +422,7 @@ export const PHOTOS = [
   },
   {
     "key": "food-5",
-    "src": "assets/img/food-5.jpg",
+    "src": "/assets/img/food-5.jpg",
     "caption": "Peda",
     "ratio": 1.333,
     "credit": "Dr Vikramjit Kakati",
@@ -432,7 +432,7 @@ export const PHOTOS = [
   },
   {
     "key": "food-6",
-    "src": "assets/img/food-6.jpg",
+    "src": "/assets/img/food-6.jpg",
     "caption": "Bal mithai",
     "ratio": 1.776,
     "credit": "Ssaurabhsharmaa",
@@ -442,7 +442,7 @@ export const PHOTOS = [
   },
   {
     "key": "food-7",
-    "src": "assets/img/food-7.jpg",
+    "src": "/assets/img/food-7.jpg",
     "caption": "Masala chai",
     "ratio": 1.333,
     "credit": "Miansari66",
@@ -452,7 +452,7 @@ export const PHOTOS = [
   },
   {
     "key": "food-8",
-    "src": "assets/img/food-8.jpg",
+    "src": "/assets/img/food-8.jpg",
     "caption": "Lassi",
     "ratio": 1.228,
     "credit": "Ravi Dwivedi",
