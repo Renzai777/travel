@@ -47,7 +47,7 @@ jobs:
           {
             echo "### Cloudflare preview"
             echo '```'
-            grep -Eo 'https://[^ ]+\.workers\.dev[^ ]*' preview.log | sort -u || true
+            grep -Eo 'https://[A-Za-z0-9.-]+\.workers\.dev' preview.log | sort -u || true
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
