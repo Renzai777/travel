@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Plains to Peaks — 15 Days from Pune</title>
+  <meta name="description" content="A 15-day journey from Pune through Mathura, Vrindavan, Delhi, Dehradun, Haridwar, Rishikesh, Devprayag, Auli, Kausani, Almora, Kainchi Dham and Nainital — culture, food, geography, shopping and activities." />
+  <meta name="theme-color" content="#f6efe3" />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=Manrope:wght@400;500;700&family=Tiro+Devanagari+Hindi&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/photos.css" />
+  <script type="module" src="js/app.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="topbar" id="topbar">
+    <a class="brand" href="#top">Plains <span>→</span> Peaks</a>
+    <nav aria-label="Main navigation">
+      <a href="#route">Route</a>
+      <a href="#days">Day by day</a>
+      <a href="#places">Places</a>
+      <a href="#food">Food</a>
+      <a href="#plan">Plan</a>
+    </nav>
+    <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle dark mode">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    </button>
+  </header>
+
+  <section class="hero" id="top" aria-labelledby="hero-heading">
+    <div class="hero-slides" id="heroSlides" aria-hidden="true"></div>
+    <div class="hero-shade" aria-hidden="true"></div>
+    <svg class="hero-art" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+      <g data-depth="0.18"><path style="fill:var(--paper)" opacity=".35" d="M0 760 L120 700 L260 735 L400 650 L520 720 L650 670 L780 730 L930 650 L1080 720 L1200 680 L1320 730 L1440 690 L1440 900 L0 900Z"/></g>
+      <g data-depth="0.3"><path style="fill:var(--paper)" d="M0 830 C160 790 300 815 430 800 C600 780 700 830 860 808 C1010 788 1150 830 1290 806 C1360 795 1410 805 1440 812 L1440 900 L0 900Z"/></g>
+    </svg>
+    <div class="hero-copy">
+      <p class="eyebrow">A 15-day journey · Pune to the Himalaya</p>
+      <h1 id="hero-heading">From the Yamuna's plains<br /><em>to Nanda Devi's snows</em></h1>
+      <p class="lede">Krishna's Braj, Mughal Delhi, the Ganga's holy gateways, the Panch Prayag confluences, the meadows of Auli and the lakes of Kumaon — climbing from 170 m to 3,000 m.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="#days">See the 15 days</a>
+        <a class="btn btn-ghost" href="#places">Explore 12 places</a>
+      </div>
+    </div>
+    <p class="hero-caption" id="heroCaption" aria-live="polite"></p>
+    <dl class="stats" id="stats"></dl>
+  </section>
+
+  <section class="filmstrip" aria-label="Postcards from the route">
+    <div class="film-track" id="filmTrack"></div>
+  </section>
+
+  <main id="main">
+    <section class="section route" id="route" aria-labelledby="route-heading">
+      <div class="section-head">
+        <p class="eyebrow">The shape of the trip</p>
+        <h2 id="route-heading">One long climb north</h2>
+        <p>Hover or tap a stop. The map is drawn from real coordinates; the line below traces how high you'll be each night.</p>
+      </div>
+      <div class="route-grid">
+        <figure class="map-card">
+          <svg id="routeMap" viewBox="0 0 520 560" role="img" aria-label="Route map of the trip"></svg>
+          <figcaption id="mapCaption">Pune lies ~1,400 km south — you fly in to Delhi.</figcaption>
+        </figure>
+        <figure class="alt-card">
+          <figcaption><strong>Altitude by night</strong><span>metres above sea level</span></figcaption>
+          <svg id="altChart" viewBox="0 0 640 300" role="img" aria-label="Altitude profile across 15 days"></svg>
+        </figure>
+      </div>
+      <aside class="prayag" aria-labelledby="prayag-heading">
+        <h3 id="prayag-heading">You'll pass all five Panch Prayag</h3>
+        <ol>
+          <li><b>Devprayag</b> Bhagirathi + Alaknanda</li>
+          <li><b>Rudraprayag</b> + Mandakini</li>
+          <li><b>Karnaprayag</b> + Pindar</li>
+          <li><b>Nandprayag</b> + Nandakini</li>
+          <li><b>Vishnuprayag</b> + Dhauliganga</li>
+        </ol>
+      </aside>
+    </section>
+
+    <section class="section days" id="days" aria-labelledby="days-heading">
+      <div class="section-head">
+        <p class="eyebrow">Itinerary</p>
+        <h2 id="days-heading">Fifteen days, day by day</h2>
+        <div class="filter" role="group" aria-label="Filter days by region" id="regionFilter">
+          <button type="button" data-region="all" aria-pressed="true">All</button>
+          <button type="button" data-region="braj" aria-pressed="false">Braj &amp; Delhi</button>
+          <button type="button" data-region="garhwal" aria-pressed="false">Garhwal</button>
+          <button type="button" data-region="kumaon" aria-pressed="false">Kumaon</button>
+        </div>
+      </div>
+      <ol class="timeline" id="timeline"></ol>
+    </section>
+
+    <section class="section places" id="places" aria-labelledby="places-heading">
+      <div class="section-head">
+        <p class="eyebrow">Destination guide</p>
+        <h2 id="places-heading">Twelve places, five ways in</h2>
+        <p>Pick a place, then choose a lens: culture, food, geography, shopping or things to do.</p>
+      </div>
+      <div class="explorer">
+        <div class="place-list" role="tablist" aria-label="Destinations" id="placeList"></div>
+        <article class="place-panel" id="placePanel" aria-live="polite"></article>
+      </div>
+    </section>
+
+    <section class="section food" id="food" aria-labelledby="food-heading">
+      <div class="section-head">
+        <p class="eyebrow">Taste of the trail</p>
+        <h2 id="food-heading">Eat your way north</h2>
+        <p>From Braj's milk sweets and Old Delhi's fried breads to momos in the Doon and bal mithai in Almora — every stop has a signature bite.</p>
+      </div>
+      <div class="food-grid" id="foodGrid"></div>
+    </section>
+
+    <section class="section plan" id="plan" aria-labelledby="plan-heading">
+      <div class="section-head">
+        <p class="eyebrow">Before you go</p>
+        <h2 id="plan-heading">Plan it right</h2>
+      </div>
+      <div class="bento">
+        <article class="tile tile-season">
+          <h3>When to go</h3>
+          <ul class="season" id="season"></ul>
+        </article>
+        <article class="tile tile-budget">
+          <h3>Rough budget <small>per person, 15 days, mid-range, two sharing</small></h3>
+          <div id="budget"></div>
+        </article>
+        <article class="tile tile-pack">
+          <h3>Pack for three climates</h3>
+          <div class="checklist" id="packing"></div>
+        </article>
+        <article class="tile tile-alerts">
+          <h3>Latest on the ground <small>researched Oct 2026</small></h3>
+          <ul class="alerts" id="alerts"></ul>
+        </article>
+        <article class="tile tile-etiquette">
+          <h3>Temple &amp; hill etiquette</h3>
+          <ul>
+            <li>Shoes off, shoulders covered, and ask before photographing people or deities.</li>
+            <li>Haridwar, Rishikesh and the Braj temple towns are vegetarian and alcohol-free.</li>
+            <li>Never drive hill roads after dark; landslide-prone in monsoon (Jul–Sep).</li>
+            <li>Carry cash — ATMs thin out beyond Rudraprayag and networks drop in valleys.</li>
+            <li>Say <em>“Radhe Radhe”</em> in Braj and <em>“Jai Badri Vishal”</em> in Garhwal.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p class="footer-title">Plains <span>→</span> Peaks</p>
+    <p>Information compiled from tourism boards, news reports and travel guides. Timings, fees and road conditions change — always confirm locally before travelling.</p>
+    <details>
+      <summary>Sources</summary>
+      <ul class="sources" id="sources"></ul>
+    </details>
+    <details>
+      <summary>Photo credits</summary>
+      <p>Photos from Wikimedia Commons, used under their stated licences.</p>
+      <ul class="sources credits" id="credits"></ul>
+    </details>
+  </footer>
+
+  <dialog class="lightbox" id="lightbox" aria-label="Photo viewer">
+    <figure>
+      <img id="lightboxImg" alt="" />
+      <figcaption id="lightboxCap"></figcaption>
+    </figure>
+    <button type="button" class="lb-btn lb-prev" id="lbPrev" aria-label="Previous photo">&#8592;</button>
+    <button type="button" class="lb-btn lb-next" id="lbNext" aria-label="Next photo">&#8594;</button>
+    <button type="button" class="lb-btn lb-close" id="lbClose" aria-label="Close">&#10005;</button>
+  </dialog>
+</body>
+</html>

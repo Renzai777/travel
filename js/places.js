@@ -1,0 +1,453 @@
+/* Destination guide content. Facts marked "check" change often — verify locally before travel. */
+export const PLACES = [
+  {
+    id: "mathura",
+    name: "Mathura",
+    native: "मथुरा",
+    region: "Braj · Uttar Pradesh",
+    altitude: 174,
+    coords: [27.49, 77.67],
+    hue: "#d9822b",
+    tagline: "Where Krishna was born, on the banks of the Yamuna",
+    intro:
+      "One of the seven sacred cities (Sapta Puri) of Hinduism and the heart of Braj Bhoomi. Mathura was also a great centre of early Indian art — the Mathura school of sculpture carved some of the earliest Buddha and Jain images in red sandstone.",
+    culture: [
+      "Shri Krishna Janmabhoomi — the temple complex built over the prison cell where Krishna is believed to have been born. Security is strict: phones, bags and cameras are not allowed inside, so use the lockers outside.",
+      "Dwarkadhish Temple (1814) — famous for its painted ceilings and swing festivals during the monsoon month of Shravan.",
+      "Vishram Ghat — where Krishna rested after slaying Kansa. The evening Yamuna aarti with floating diyas is the moment to be here.",
+      "Government Museum Mathura — one of India's finest collections of Kushan- and Gupta-era sculpture in spotted red sandstone.",
+    ],
+    food: [
+      "Mathura ka peda — dense, caramel-brown milk fudge; Brijwasi is the best-known name.",
+      "Kachori-sabzi with jalebi — the classic Braj breakfast, sold hot from street-side kadhais from 7 am.",
+      "Thick malai lassi in kulhads and rabri at the stalls near Holi Gate.",
+      "Makhan-mishri — white butter with rock sugar, Krishna's favourite, offered as prasad.",
+    ],
+    geography: [
+      "Flat alluvial Gangetic plain on the west bank of the Yamuna, about 180 km south of Delhi.",
+      "Winters are sharp (5–8 °C nights in Dec–Jan, frequent fog); summers cross 44 °C.",
+    ],
+    shopping: [
+      "Poshak (deity clothes), mukuts and tiny jewellery for home shrines — around Dwarkadhish Temple.",
+      "Kanthi and tulsi-bead malas, brass Laddu Gopal idols, sandalwood paste.",
+      "Boxes of peda to carry home — they keep 7–10 days.",
+    ],
+    activities: [
+      "Evening Yamuna aarti and a short boat ride at Vishram Ghat.",
+      "Morning trip to Gokul and Raman Reti, where Krishna spent his childhood — devotees roll in the soft sand.",
+      "Govardhan parikrama (21 km walk around the sacred hill) — or do it by e-rickshaw in ~2.5 hours.",
+    ],
+    tips: [
+      "Holi here (Lathmar Holi in Barsana, phoolon-wali Holi in Vrindavan) is legendary — and extremely crowded.",
+      "Dress modestly; remove footwear before temples and carry socks for cold marble floors in winter.",
+    ],
+  },
+  {
+    id: "vrindavan",
+    name: "Vrindavan",
+    native: "वृंदावन",
+    region: "Braj · Uttar Pradesh",
+    altitude: 170,
+    coords: [27.58, 77.7],
+    hue: "#c2417a",
+    tagline: "A town of 5,000 temples where every greeting is “Radhe Radhe”",
+    intro:
+      "Krishna's playground of youth, Vrindavan was rediscovered in the 16th century by followers of Chaitanya Mahaprabhu. Today it hums with kirtan, widows' ashrams, cows, monkeys and bells from dawn to midnight.",
+    culture: [
+      "Banke Bihari Temple — the most beloved shrine. The curtain before the deity is drawn every few minutes, because legend says one long gaze could make devotees faint. Winter darshan is roughly 8:45 am–1 pm and 4:30–8:30 pm (check: timings change by season and festival).",
+      "Prem Mandir — white Italian marble temple whose walls light up in shifting colours after dark; the evening musical fountain is a crowd favourite.",
+      "ISKCON Krishna-Balaram Mandir — founded by Srila Prabhupada; foreign devotees, kirtan, and the samadhi in white marble.",
+      "Radha Raman Temple (1542) — the deity is said to have self-manifested from a shaligram stone and the kitchen fire has reportedly never gone out.",
+      "Nidhivan — a grove of twisted tulsi trees; locals believe Krishna performs the raas-leela here each night, so it's locked after dusk.",
+    ],
+    food: [
+      "Prasad thali at ISKCON's Govinda's — simple, sattvic and excellent.",
+      "Aloo-tikki chaat, dahi-bhalle and kachori around Loi Bazaar.",
+      "Rabri and khurchan (scraped milk sheets) — Braj's most prized sweets.",
+      "Everything is vegetarian; onion and garlic are absent in many places.",
+    ],
+    geography: [
+      "About 12 km north of Mathura, inside a loop of the Yamuna.",
+      "Keshi Ghat, with its sandstone pavilions, is the most photogenic stretch of riverfront.",
+    ],
+    shopping: [
+      "Loi Bazaar — tulsi malas, chandan, kirtan instruments (kartals, mridanga), devotional prints.",
+      "Gopi-dot-painted cloth bags and deity dresses at very fair prices.",
+    ],
+    activities: [
+      "Evening Yamuna aarti at Keshi Ghat followed by the Prem Mandir light show.",
+      "Join a kirtan at ISKCON or Banke Bihari's lanes at 7 pm — it's open to all.",
+      "Day-trip loop: Barsana (Radha's village) + Nandgaon + Govardhan.",
+    ],
+    tips: [
+      "Monkeys here famously snatch glasses and phones — keep spectacles in your pocket inside lanes.",
+      "Banke Bihari is extremely crowded on weekends and Ekadashi — go at opening time on a weekday.",
+    ],
+  },
+  {
+    id: "delhi",
+    name: "Delhi",
+    native: "दिल्ली",
+    region: "National Capital Territory",
+    altitude: 216,
+    coords: [28.61, 77.21],
+    hue: "#9b3d2b",
+    tagline: "Seven cities layered over a thousand years",
+    intro:
+      "From the Tomar Rajputs and the Delhi Sultanate to the Mughals and Lutyens' British capital, Delhi has been rebuilt at least seven times. Three UNESCO World Heritage Sites sit inside the city: Red Fort, Qutub Minar and Humayun's Tomb.",
+    culture: [
+      "Red Fort (1648) — Shah Jahan's palace-fortress; the evening light-and-sound show tells the Mughal story. Closed Mondays.",
+      "Jama Masjid — India's largest mosque; climb the southern minaret for a view over Old Delhi's rooftops.",
+      "Humayun's Tomb — the garden tomb that inspired the Taj Mahal; magical at golden hour.",
+      "Qutub Minar — 73 m sandstone victory tower (begun 1199) and the 1,600-year-old rust-free iron pillar.",
+      "Gurudwara Bangla Sahib — sit by the sarovar and eat at the langar kitchen that feeds thousands daily, free.",
+      "Swaminarayan Akshardham — monumental carved-stone complex with a water show at dusk (closed Mondays; no phones).",
+    ],
+    food: [
+      "Paranthe Wali Gali, Chandni Chowk — stuffed, deep-fried paranthas served since the 1870s.",
+      "Old Famous Jalebi Wala at Dariba corner — thick desi-ghee jalebis.",
+      "Natraj Dahi Bhalle Wala and Shiv Mishthan's chole-bhature.",
+      "Karim's near Jama Masjid — Mughlai mutton korma and nihari (for non-vegetarians).",
+      "Daulat ki chaat — a cloud-like winter-only milk froth sold in Old Delhi from roughly Nov to Feb.",
+    ],
+    geography: [
+      "Sits on the Yamuna floodplain where the Aravalli ridge — among the oldest mountain ranges on earth — tails off.",
+      "Winter smog (Nov–Jan) can be severe; check the AQI and carry an N95.",
+    ],
+    shopping: [
+      "Dilli Haat INA — crafts from every Indian state in one open-air bazaar.",
+      "Chandni Chowk lanes: Kinari Bazaar (trims and wedding accessories), Dariba Kalan (silver), Khari Baoli (Asia's largest spice market).",
+      "Janpath and Sarojini Nagar for bargains; Khan Market and Shahpur Jat for boutique labels.",
+    ],
+    activities: [
+      "A cycle-rickshaw food walk through Old Delhi in the morning.",
+      "Sunset at Humayun's Tomb, then Kartavya Path and India Gate lit up at night.",
+      "Lodhi Garden walk among 15th-century tombs; Lodhi Art District murals nearby.",
+    ],
+    tips: [
+      "Use the Delhi Metro — fast, cheap, and avoids traffic. Many monuments are closed on Mondays.",
+      "Book Red Fort and Qutub tickets online via ASI to skip queues.",
+    ],
+  },
+  {
+    id: "dehradun",
+    name: "Dehradun",
+    native: "देहरादून",
+    region: "Doon Valley · Uttarakhand",
+    altitude: 640,
+    coords: [30.32, 78.03],
+    hue: "#3f7d4e",
+    tagline: "Basmati fields, colonial campuses and the gateway to the hills",
+    intro:
+      "The capital of Uttarakhand sits in the Doon Valley between the Shivalik hills and the Lesser Himalaya. Its name is said to come from Guru Ram Rai's dera (camp) set up here in 1676. Since the Delhi–Dehradun Expressway opened in April 2026, it's just ~2.5 hours from Delhi.",
+    culture: [
+      "Forest Research Institute (1906) — a vast Greco-Roman-meets-colonial red-brick campus with six museums; a film location favourite.",
+      "Tapkeshwar Mahadev — a cave temple where water drips continuously onto the Shiva lingam.",
+      "Mindrolling Monastery, Clement Town — home to one of India's tallest stupas, with a giant Buddha statue.",
+      "Darbar Sahib — Guru Ram Rai's gurudwara with Mughal-style architecture; the Jhanda Mela every spring.",
+    ],
+    food: [
+      "Bakeries! Ellora's Melting Moments (since 1953) for rusks and cookies; Grand Bakery for cheese straws.",
+      "Doon basmati rice — once among the world's finest aromatic rices.",
+      "Momos and thukpa in the Tibetan colony around Clement Town.",
+      "Kumaoni and Garhwali thali at local family-run restaurants — try kafuli and mandua roti.",
+    ],
+    geography: [
+      "A wide longitudinal valley ('doon') bounded by the Ganga to the east and the Yamuna to the west.",
+      "Mussoorie, the 'Queen of the Hills', perches on the ridge just 35 km away.",
+    ],
+    shopping: [
+      "Paltan Bazaar around the Clock Tower — woollens, spices, local snacks.",
+      "Tibetan Market on Gandhi Road — jackets, shawls and handicrafts.",
+      "Packs of Doon basmati and Ellora's rusks as gifts.",
+    ],
+    activities: [
+      "Robber's Cave (Guchhupani) — wade through a narrow river gorge where the stream disappears and reappears.",
+      "Sahastradhara — sulphur springs and drip caves, believed to have medicinal properties.",
+      "Evening detour up to Mussoorie's Mall Road and Camel's Back Road if time allows.",
+    ],
+    tips: [
+      "Robber's Cave involves walking in ankle-deep water — wear sandals and carry a change of clothes.",
+    ],
+  },
+  {
+    id: "haridwar",
+    name: "Haridwar",
+    native: "हरिद्वार",
+    region: "Garhwal · Uttarakhand",
+    altitude: 314,
+    coords: [29.95, 78.16],
+    hue: "#e0a326",
+    tagline: "The Gateway to God, where the Ganga leaves the mountains",
+    intro:
+      "Haridwar is where the Ganga emerges from the Himalaya onto the plains. It's one of the four sites of the Kumbh Mela and, per legend, one of the places where drops of amrit (nectar) fell. Every evening the whole city turns towards the river.",
+    culture: [
+      "Har Ki Pauri Ganga Aarti — at sunset, priests swing tiered brass lamps as thousands float leaf-boat diyas downstream. The defining experience of the trip.",
+      "Mansa Devi and Chandi Devi temples — hilltop shrines of the goddess, each reached by ropeway.",
+      "Genealogy registers — the pandas (priests) of Haridwar keep handwritten family records going back generations; many Indians can find their ancestors' names here.",
+      "Bharat Mata Mandir — an eight-storey temple dedicated to Mother India, with floors for saints, heroes and deities.",
+    ],
+    food: [
+      "Puri-aloo and kachori at Mohan ji Puri Wale near Har Ki Pauri.",
+      "Kheer and lassi at Hoshiyar Puri, a sweet shop running since the 1930s.",
+      "Hot jalebi and doodh (milk) at night by the ghats.",
+      "The city is strictly vegetarian; alcohol is prohibited.",
+    ],
+    geography: [
+      "The river is split into canals here — the Upper Ganga Canal (1854) starts at Haridwar and was a 19th-century engineering marvel.",
+      "Rajaji National Park (elephants, leopards) surrounds the city on three sides.",
+    ],
+    shopping: [
+      "Bara Bazaar and Moti Bazaar — rudraksha beads, brass and copper ritual vessels, Ganga-jal cans.",
+      "Ayurvedic oils and herbal products — Patanjali Yogpeeth is on the highway.",
+    ],
+    activities: [
+      "Arrive at Har Ki Pauri an hour early to grab a step facing the aarti platform.",
+      "Ride the Mansa Devi ropeway for a panoramic view of the Ganga's braided channels.",
+      "Safari in Rajaji National Park's Chilla zone (season roughly mid-Nov to mid-June).",
+    ],
+    tips: [
+      "Beware of touts at the ghats asking for donations 'for the aarti' — the aarti is free.",
+      "The current is fierce — bathe only at ghats with chains to hold.",
+    ],
+  },
+  {
+    id: "rishikesh",
+    name: "Rishikesh",
+    native: "ऋषिकेश",
+    region: "Garhwal · Uttarakhand",
+    altitude: 372,
+    coords: [30.09, 78.27],
+    hue: "#1f8a8a",
+    tagline: "Yoga capital of the world, with white-water and suspension bridges",
+    intro:
+      "Sages meditated in these forests for millennia, and in 1968 the Beatles came to study Transcendental Meditation here — writing much of the White Album. Today Rishikesh blends ashram life with rafting, cafés and the sound of the jade-green Ganga.",
+    culture: [
+      "Parmarth Niketan Ganga Aarti — a more intimate, music-led aarti with chanting rishikumars (young students), around sunset.",
+      "Triveni Ghat — the town's main bathing ghat with its own evening aarti.",
+      "Beatles Ashram (Chaurasi Kutia) — the abandoned Maharishi Mahesh Yogi ashram, now covered in murals. Entry fee applies.",
+      "Ram Jhula — iconic iron suspension bridge. Lakshman Jhula has been closed to traffic since 2019; a new glass-deck bridge (Bajrang Setu) has been built beside it (check current status).",
+      "International Yoga Festival every March at Parmarth Niketan.",
+    ],
+    food: [
+      "Chotiwala — a Rishikesh institution since 1958 for thalis.",
+      "Café culture in Tapovan: Little Buddha Café, The Beatles Café, Ganga Beach Café — river views, banana pancakes, Israeli platters.",
+      "Ayurvedic and sattvic meals at ashram canteens.",
+      "Strictly vegetarian, no eggs in many areas, no alcohol.",
+    ],
+    geography: [
+      "The Ganga exits a narrow Himalayan gorge here; the river runs a striking emerald colour in winter.",
+      "Sits at the foothills of the Garhwal Himalaya, where the Shivalik range meets the plain.",
+    ],
+    shopping: [
+      "Singing bowls, crystal malas, rudraksha, and handmade journals on the Laxman Jhula road.",
+      "Yoga wear, Indian cotton clothes and ayurvedic massage oils.",
+    ],
+    activities: [
+      "White-water rafting from Shivpuri (16 km, grade III–IV rapids like 'Roller Coaster' and 'Golf Course'). Season roughly Sept to June; closed in monsoon.",
+      "Bungee jumping at Jumpin Heights, Mohan Chatti — India's highest fixed-platform jump (83 m).",
+      "Morning yoga drop-in class; evening Parmarth aarti.",
+      "Hike to Neer Garh waterfall or the Kunjapuri temple at sunrise for a Himalayan view.",
+    ],
+    tips: [
+      "Book rafting through a licensed operator with helmets and life jackets — avoid the cheapest unlicensed rafts.",
+    ],
+  },
+  {
+    id: "devprayag",
+    name: "Devprayag",
+    native: "देवप्रयाग",
+    region: "Panch Prayag · Garhwal",
+    altitude: 830,
+    coords: [30.15, 78.6],
+    hue: "#2e6fa3",
+    tagline: "The holy confluence where the Ganga is born",
+    intro:
+      "At Devprayag the turbulent, muddy-green Bhagirathi and the calm, blue-green Alaknanda meet — and only from here downstream is the river called the Ganga. It is the last (or first) of the five sacred confluences, the Panch Prayag.",
+    culture: [
+      "The Sangam — walk down the stone steps to the meeting point; you can see the two colours of water merge.",
+      "Raghunath ji Temple — an ancient stone temple to Lord Rama, believed to be where Rama did penance after defeating Ravana.",
+      "Home to the pandas (priests) of Badrinath, who traditionally serve pilgrims during the Char Dham season.",
+    ],
+    food: [
+      "Simple dhabas on the highway — rajma-chawal, Garhwali dal (gahat), and tea with views of the gorge.",
+    ],
+    geography: [
+      "The village clings to steep slopes at the river junction, ~75 km upstream of Rishikesh.",
+      "Your route follows the Alaknanda all the way up to Auli, passing all five prayags: Devprayag, Rudraprayag (Mandakini), Karnaprayag (Pindar), Nandprayag (Nandakini) and Vishnuprayag (Dhauliganga).",
+    ],
+    shopping: ["Small stalls selling Ganga-jal bottles, puja items and local pulses."],
+    activities: [
+      "Sangam darshan and a quiet hour on the ghats.",
+      "Stop at Dhari Devi temple near Srinagar, the guardian goddess of the Char Dham.",
+    ],
+    tips: [
+      "Hill roads beyond Rishikesh are narrow and winding — keep motion-sickness tablets handy and avoid night driving.",
+    ],
+  },
+  {
+    id: "auli",
+    name: "Auli",
+    native: "औली",
+    region: "Chamoli · Garhwal",
+    altitude: 2800,
+    coords: [30.53, 79.57],
+    hue: "#5a6fb5",
+    tagline: "Oak-ringed meadows facing Nanda Devi",
+    intro:
+      "Auli's grassy slopes (bugyals) rise from about 2,500 to 3,050 m above Joshimath, facing a wall of peaks including Nanda Devi (7,816 m) — India's second-highest mountain — along with Kamet, Mana Parvat and Dronagiri. In winter it's India's best-known ski slope.",
+    culture: [
+      "Jyotirmath (Joshimath) — one of the four monasteries founded by Adi Shankaracharya in the 8th century; the 1,200-year-old Kalpavriksha mulberry tree stands here.",
+      "Narsingh Temple — the winter seat of Lord Badrinath, when the Badrinath shrine is snowbound.",
+      "Garhwali Bhotiya villages nearby weave wool shawls and carpets.",
+    ],
+    food: [
+      "Garhwali dishes: kafuli (spinach-fenugreek curry), phaanu (lentil stew), chainsoo (roasted black gram), mandua (finger-millet) roti with ghee.",
+      "Jhangora ki kheer — barnyard-millet pudding.",
+      "Hot maggi and ginger tea at the slopes — an Auli ritual.",
+    ],
+    geography: [
+      "Snow typically Dec to Mar; skiing season roughly Jan–Mar.",
+      "Auli's artificial lake is one of the highest man-made lakes in the world, built to feed snow-making machines.",
+      "The Joshimath–Auli ropeway (one of Asia's longest) has been reported closed since the 2023 land-subsidence crisis — check with GMVN; the road (16 km) is the reliable route.",
+    ],
+    shopping: ["Hand-knitted woollens, Bhotiya shawls and rugs, and local rajma and herbs in Joshimath market."],
+    activities: [
+      "Gorson Bugyal trek — an easy few-km walk through oak and rhododendron forest to an open meadow with 180° Himalayan views.",
+      "Ski or snowboard courses through GMVN (Jan–Mar); the chairlift runs when operational.",
+      "Sunrise from the Auli slopes — the first light turning Nanda Devi gold.",
+      "Visit Vishnuprayag, the confluence just above Joshimath.",
+    ],
+    tips: [
+      "Nights are well below freezing in winter. Pack thermals, a down jacket, gloves and a beanie.",
+      "Altitude jump is significant — hydrate well and take it slow on the first day.",
+    ],
+  },
+  {
+    id: "kausani",
+    name: "Kausani & Baijnath",
+    native: "कौसानी",
+    region: "Bageshwar · Kumaon",
+    altitude: 1890,
+    coords: [29.84, 79.6],
+    hue: "#7a5aa8",
+    tagline: "A 300 km Himalayan panorama Gandhi called the Switzerland of India",
+    intro:
+      "Crossing from Garhwal into Kumaon, you descend via Gwaldam to the Katyuri-era Baijnath temples and climb to Kausani, a pine-forested ridge with an unbroken view of Trishul, Nanda Devi and Panchachuli.",
+    culture: [
+      "Anasakti Ashram — Gandhi stayed here for two weeks in 1929 and wrote his commentary on the Gita.",
+      "Baijnath Temple complex (12th–13th century) — stone temples on the Gomti river built by the Katyuri kings.",
+      "Birthplace of Hindi poet Sumitranandan Pant — his house is now a small museum.",
+    ],
+    food: ["Kausani tea from the local tea estate; Kumaoni thali with bhatt (black soybean) dal."],
+    geography: [
+      "Ridge-top village at ~1,890 m between the Koshi and Gomti valleys.",
+      "Best views on clear mornings, especially Oct–Nov after the monsoon clears the air.",
+    ],
+    shopping: ["Kausani Shawl Weaving Factory — pure wool shawls and Angora stoles.", "Packets of Kausani orthodox tea."],
+    activities: ["Sunrise over the Himalayas from your hotel balcony.", "Tea-garden walk; feed the fish at the Baijnath temple tank."],
+    tips: ["This is a long drive day from Auli — leave at 7 am and stop at Karnaprayag and Gwaldam for breaks."],
+  },
+  {
+    id: "almora",
+    name: "Almora",
+    native: "अल्मोड़ा",
+    region: "Kumaon · Uttarakhand",
+    altitude: 1640,
+    coords: [29.6, 79.66],
+    hue: "#a3532a",
+    tagline: "The horseshoe ridge that is Kumaon's cultural capital",
+    intro:
+      "Capital of the Chand kings from the 16th century, Almora sits on a horseshoe-shaped ridge. Swami Vivekananda meditated here in 1890; later the 'Crank's Ridge' at Kasar Devi drew Bob Dylan, Cat Stevens, Timothy Leary and the hippie trail.",
+    culture: [
+      "Kasar Devi Temple — a 2nd-century goddess shrine on a ridge above town; sunset here is unforgettable.",
+      "Nanda Devi Temple — the protector goddess of Kumaon; the Nanda Devi fair each September.",
+      "Jageshwar Dham (36 km) — a cluster of 124 stone temples from the 9th–13th centuries in a deodar forest; one of the 12 Jyotirlingas by some traditions.",
+      "Aipan — Kumaon's ritual floor art in red ochre and white rice paste.",
+    ],
+    food: [
+      "Bal mithai — roasted khoya fudge coated in white sugar balls — and singori, khoya wrapped in a maalu leaf cone. Almora's signature.",
+      "Kumaoni raita (with mustard and cucumber), bhatt ki churkani, aloo ke gutke, ras-bhaat.",
+      "Lala Bazaar sweet shops are the place to buy them.",
+    ],
+    geography: [
+      "Ridge at ~1,640 m between the Koshi and Suyal rivers; the deodar forests of Binsar Wildlife Sanctuary are 30 km away.",
+    ],
+    shopping: [
+      "Hammered copper utensils made by the Tamta coppersmiths — tambe ke bartan.",
+      "Aipan-painted plates and décor, Kumaoni woollen shawls, and boxes of bal mithai.",
+      "Lala Bazaar — a stone-paved 200-year-old market street with carved wooden facades.",
+    ],
+    activities: [
+      "Sunset at Kasar Devi or Bright End Corner.",
+      "Half-day to Jageshwar temples, or to Binsar's Zero Point for a 300 km Himalayan view.",
+      "Stroll through Lala Bazaar and Khajanchi Mohalla's old houses.",
+    ],
+    tips: ["Bal mithai keeps for about a week — buy on your last morning."],
+  },
+  {
+    id: "kainchi",
+    name: "Kainchi Dham",
+    native: "कैंची धाम",
+    region: "Nainital district · Kumaon",
+    altitude: 1400,
+    coords: [29.42, 79.52],
+    hue: "#c8501f",
+    tagline: "Neem Karoli Baba's ashram in a scissor-shaped bend of the river",
+    intro:
+      "Founded in 1962 by Neem Karoli Baba (Maharaj-ji), the ashram sits where the road makes two sharp, scissor-like (kainchi) bends beside the Shipra stream. Seekers like Ram Dass — and, famously, Steve Jobs and later Mark Zuckerberg — came here.",
+    culture: [
+      "Hanuman temple and Maharaj-ji's room — silent, simple, deeply peaceful.",
+      "Foundation Day fair every June 15 draws lakhs of devotees, with special traffic plans and shuttle-only access.",
+      "Prasad of malpua is traditionally distributed on the foundation day.",
+    ],
+    food: ["Roadside dhabas at Bhowali for parathas, and fresh plums/peaches/apricots from Ramgarh orchards in summer."],
+    geography: ["About 17 km from Nainital on the Bhowali–Almora road, in a narrow wooded valley."],
+    shopping: ["Books and photos of Maharaj-ji at stalls outside; Bhowali fruit market for seasonal fruit."],
+    activities: ["Darshan, a quiet sit by the stream, and reading the Hanuman Chalisa as devotees do."],
+    tips: [
+      "Typically open early morning to evening (about 7 am–7 pm; check locally — timings vary by season).",
+      "Photography is not allowed inside. Dress modestly; footwear off.",
+      "Authorities have discussed registration and visitor caps — check for the latest rules before you go.",
+    ],
+  },
+  {
+    id: "nainital",
+    name: "Nainital",
+    native: "नैनीताल",
+    region: "Kumaon · Uttarakhand",
+    altitude: 2084,
+    coords: [29.38, 79.46],
+    hue: "#2a7a9b",
+    tagline: "The lake district of India",
+    intro:
+      "Nainital wraps around a crescent-shaped lake said to be one of the eyes (naina) of Sati. Founded as a British hill station in 1841 by sugar trader P. Barron, it was the summer capital of the United Provinces.",
+    culture: [
+      "Naina Devi Temple on the lake's northern shore — one of the 51 Shakti Peethas.",
+      "St. John in the Wilderness (1846) church, and colonial-era boarding schools like Sherwood College.",
+      "Mall Road connecting Mallital and Tallital — evening promenade culture.",
+    ],
+    food: [
+      "Sakley's on Mall Road for pastries; Machan and Embassy for old-world dining.",
+      "Bun-tikki and hot chocolate on the Mall.",
+      "Kumaoni thali at local eateries.",
+    ],
+    geography: [
+      "Lake at ~1,938 m, surrounded by seven peaks including Naina Peak (China Peak, 2,615 m).",
+      "Best seasons: Mar–Jun and Oct–Nov; occasional snow Dec–Feb.",
+    ],
+    shopping: [
+      "Handmade wax candles — Nainital's signature craft.",
+      "Tibetan Market at Mallital for woollens and jackets.",
+      "Wooden toys, walking sticks and fruit preserves (rhododendron/buransh juice!).",
+    ],
+    activities: [
+      "Boating on Naini Lake — rowboats, paddle boats or a yacht.",
+      "Snow View Point by cable car; Tiffin Top hike at sunrise.",
+      "Day-trip loop to Bhimtal, Sattal and Naukuchiatal lakes.",
+    ],
+    tips: ["Weekends get packed with traffic from Delhi — plan Mall Road on a weekday evening."],
+  },
+];
+
+export const placeById = (id) => PLACES.find((p) => p.id === id);
