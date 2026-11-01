@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, type MouseEvent } from "react";
 import { reduceMotion } from "../lib/motion";
 import type { Lens } from "../types/photo";
+import { appNavigate, isWorkspacePath } from "./location";
 import { SPY_IDS, parseLocation, pathFor, targetFor, titleFor, type Route, type SpyId } from "./routes";
 
 const PADDING = 72; // must match `html { scroll-padding-top: 72px }` in css/styles.css
@@ -170,6 +171,11 @@ export function useGuideRouting(place: string, select: Select) {
       if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
       const url = new URL(e.currentTarget.href);
       if (url.origin !== location.origin) return;
+      if (isWorkspacePath(url.pathname)) {
+        e.preventDefault();
+        appNavigate(url.pathname + url.search + url.hash);
+        return;
+      }
       e.preventDefault();
       navigate(parseLocation(url.pathname, url.hash));
     },

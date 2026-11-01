@@ -97,6 +97,8 @@ a { color: var(--accent); }
   display: grid; place-items: center; cursor: pointer; color: var(--ink);
 }
 .theme-toggle svg { width: 18px; fill: currentColor; }
+.topbar-cta { display: inline-flex; align-items: center; gap: .45rem; padding: .45rem .9rem; border-radius: 99px; border: 1px solid var(--line); background: var(--card); color: var(--ink); font-weight: 700; font-size: .9rem; text-decoration: none; }
+.topbar-cta svg { width: 18px; height: 18px; fill: currentColor; }
 
 /* ---------- hero ---------- */
 .hero { position: relative; min-height: 100svh; display: flex; flex-direction: column; justify-content: center; overflow: hidden; isolation: isolate; }
@@ -330,6 +332,7 @@ a { color: var(--accent); }
 /* ---------- reveal ---------- */
 .reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s var(--ease), transform .7s var(--ease); }
 .reveal.in { opacity: 1; transform: none; }
+.ws-loading { padding: 4rem var(--gutter); text-align: center; color: var(--ink-soft); }
 
 /* ---------- responsive ---------- */
 /* Update / offline-ready toast (E2-S3) */
@@ -366,6 +369,7 @@ a { color: var(--accent); }
 }
 @media (max-width: 640px) {
   .topbar nav { display: none; }
+  .topbar-cta span { display: none; }
   .stats { grid-template-columns: repeat(2, 1fr); margin: 2rem var(--gutter) 20px; }
   .stat:last-child { grid-column: span 2; }
   .day { grid-template-columns: 52px 1fr; gap: .6rem; }

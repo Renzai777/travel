@@ -10,10 +10,10 @@ export type Route =
   | { kind: "top" }
   | { kind: "section"; section: Section }
   | { kind: "place"; place: string }
-  | { kind: "reserved" } // e.g. /board/… (Epic 3): never rewritten by the guide
+  | { kind: "reserved" } // /w/… and /board/…: owned by the workspace app, never rewritten by the guide
   | { kind: "unknown" };
 
-const RESERVED_PREFIXES = ["/board"];
+const RESERVED_PREFIXES = ["/board", "/w"];
 const isSection = (s: string): s is Section => (SECTIONS as readonly string[]).includes(s);
 const isPlace = (id: string): boolean => PLACES.some((p) => p.id === id);
 
