@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { RouteMap } from "./charts/RouteMap";
 import { AltitudeChart } from "./charts/AltitudeChart";
-import { selectPlace } from "../lib/legacyBridge";
 
-export function RouteSection() {
+export function RouteSection({ onSelectPlace }: { onSelectPlace: (id: string) => void }) {
   const [caption, setCaption] = useState("Pune lies ~1,400 km south — you fly in to Delhi.");
 
   return (
@@ -18,7 +17,7 @@ export function RouteSection() {
       </div>
       <div className="route-grid">
         <figure className="map-card">
-          <RouteMap onSelect={(id) => selectPlace(id, true)} onHover={setCaption} />
+          <RouteMap onSelect={(id) => onSelectPlace(id)} onHover={setCaption} />
           <figcaption id="mapCaption">{caption}</figcaption>
         </figure>
         <figure className="alt-card">

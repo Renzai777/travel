@@ -1,6 +1,6 @@
 # Plains → Peaks — 15-day trip site
 
-Vite + React + TypeScript site (migration in progress: the legacy ES modules in js/ still render the page) for a 15-day Pune → Braj → Delhi → Garhwal → Kumaon journey.
+Vite + React + TypeScript site for a 15-day Pune → Braj → Delhi → Garhwal → Kumaon journey. Page sections live in `src/guide/`, shared pieces in `src/components/`.
 
 ## Run locally / share on your network
 
