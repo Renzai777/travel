@@ -1,5 +1,5 @@
-"""Download freely licensed travel photos from Wikimedia Commons into assets/img
-and write js/photos.js with captions + attribution.
+"""Download freely licensed travel photos from Wikimedia Commons into public/assets/img
+and write src/data/photos.js with captions + attribution.
 
 Usage: python tools/fetch_photos.py
 """
@@ -12,8 +12,8 @@ import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-IMG_DIR = ROOT / "assets" / "img"
-OUT_JS = ROOT / "js" / "photos.js"
+IMG_DIR = ROOT / "public" / "assets" / "img"
+OUT_JS = ROOT / "src" / "data" / "photos.js"
 UA = "PlainsToPeaksTripSite/1.0 (personal travel itinerary; python urllib)"
 API = "https://commons.wikimedia.org/w/api.php"
 WIDTH = 1400

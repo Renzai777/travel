@@ -1,10 +1,10 @@
 import { el, formatInr } from "./dom.js";
-import { PLACES, placeById } from "./places.js";
-import { DAYS } from "./itinerary.js";
-import { SEASONS, BUDGET, PACKING, ALERTS, SOURCES } from "./planning.js";
+import { PLACES, placeById } from "../src/data/places.js";
+import { DAYS } from "../src/data/itinerary.js";
+import { SEASONS, BUDGET, PACKING, ALERTS, SOURCES } from "../src/data/planning.js";
 import { renderRouteMap, renderAltitude } from "./charts.js";
 import { initGallery, photo, zoomable } from "./gallery.js";
-import { photosFor } from "./photos.js";
+import { photosFor } from "../src/data/photos.js";
 
 const REGION = {
   mathura: "braj", vrindavan: "braj", delhi: "braj",

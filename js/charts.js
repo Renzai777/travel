@@ -1,7 +1,7 @@
 /* Route map (projected from real lat/lon) and the nightly altitude profile. */
 import { svg } from "./dom.js";
-import { PLACES, placeById } from "./places.js";
-import { DAYS } from "./itinerary.js";
+import { PLACES, placeById } from "../src/data/places.js";
+import { DAYS } from "../src/data/itinerary.js";
 
 const MAP = { w: 520, h: 560, pad: 48, lat: [27.2, 30.8], lon: [76.9, 80.0] };
 
