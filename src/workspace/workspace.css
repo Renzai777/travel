@@ -553,3 +553,497 @@
   color: var(--ink);
   font-size: 0.9rem;
 }
+
+/* Tree & Folder sidebar styles (E3-S2) */
+
+.ws-folders-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.ws-folders-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.ws-folders-header .ws-section-title {
+  margin: 0;
+}
+
+.ws-icon-button {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  transition:
+    background 0.15s var(--ease),
+    border-color 0.15s var(--ease);
+}
+
+.ws-icon-button:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.ws-root-link-container {
+  margin: 0.25rem 0;
+}
+
+.ws-root-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 8px;
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 0.92rem;
+  font-weight: 500;
+  transition:
+    background 0.15s var(--ease),
+    color 0.15s var(--ease);
+}
+
+.ws-root-link:hover {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+.ws-root-link.ws-selected,
+.ws-root-link[aria-current="page"] {
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.react-aria-Tree {
+  display: flex;
+  flex-direction: column;
+  outline: none;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+
+.react-aria-TreeItem {
+  outline: none;
+  position: relative;
+  border-radius: 8px;
+  padding-inline-start: calc(var(--tree-item-level, 1) * 14px);
+  margin: 1px 0;
+  transition:
+    background 0.15s var(--ease),
+    opacity 0.15s var(--ease);
+  cursor: pointer;
+}
+
+.react-aria-TreeItem[data-selected] {
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+}
+
+.react-aria-TreeItem[data-focus-visible] {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.react-aria-TreeItem[data-dragging] {
+  opacity: 0.5;
+}
+
+.react-aria-TreeItem[data-drop-target] {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+.ws-tree-row-content {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.5rem 0.35rem 0.2rem;
+  min-height: 32px;
+  box-sizing: border-box;
+}
+
+.ws-drag-handle {
+  background: transparent;
+  border: none;
+  padding: 0 0.15rem;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  cursor: grab;
+  line-height: 1;
+  opacity: 0;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+.react-aria-TreeItem:hover .ws-drag-handle,
+.react-aria-TreeItem[data-focused] .ws-drag-handle,
+.react-aria-TreeItem:focus-within .ws-drag-handle {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .ws-drag-handle {
+    opacity: 0.75;
+  }
+}
+
+.ws-tree-chevron {
+  background: transparent;
+  border: none;
+  color: var(--ink-soft);
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.ws-tree-chevron-spacer {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+.ws-chevron-icon {
+  display: inline-block;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1;
+  transition: transform 0.15s var(--ease);
+}
+
+.react-aria-TreeItem[data-expanded] .ws-chevron-icon {
+  transform: rotate(90deg);
+}
+
+.ws-folder-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+  line-height: 1;
+  user-select: none;
+}
+
+.ws-tree-title {
+  flex: 1 1 auto;
+  font-size: 0.9rem;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ws-tree-actions {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  opacity: 0;
+}
+
+.react-aria-TreeItem:hover .ws-tree-actions,
+.react-aria-TreeItem[data-focused] .ws-tree-actions,
+.react-aria-TreeItem:focus-within .ws-tree-actions {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .ws-tree-actions {
+    opacity: 1;
+  }
+}
+
+.ws-tree-menu-button {
+  background: transparent;
+  border: none;
+  color: var(--ink-soft);
+  font-size: 1rem;
+  padding: 0 0.35rem;
+  line-height: 1;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.ws-tree-menu-button:hover {
+  color: var(--ink);
+  background: color-mix(in srgb, var(--ink) 10%, transparent);
+}
+
+.ws-drop-indicator {
+  height: 2px;
+  background: var(--accent);
+  outline: none;
+  border: none;
+  margin: 0;
+  padding: 0;
+  display: none;
+  position: relative;
+  z-index: 5;
+}
+
+.ws-drop-indicator[data-drop-target] {
+  display: block;
+}
+
+.ws-inline-rename-field {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.ws-rename-input {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  padding: 0.2rem 0.4rem;
+  border-radius: 6px;
+  border: 1px solid var(--accent);
+  background: var(--card);
+  color: var(--ink);
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+/* Recovered section */
+.ws-recovered-section {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--line);
+}
+
+.ws-recovered-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0 0 0.3rem;
+}
+
+.ws-recovered-hint {
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+  line-height: 1.4;
+  margin: 0 0 0.75rem;
+}
+
+/* Popover & Menu */
+.react-aria-Popover.ws-menu-popover {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  padding: 0.3rem;
+  min-width: 150px;
+  z-index: 200;
+  outline: none;
+}
+
+.react-aria-Menu.ws-menu {
+  outline: none;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.react-aria-MenuItem.ws-menu-item {
+  padding: 0.45rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: var(--ink);
+  cursor: pointer;
+  outline: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  user-select: none;
+}
+
+.react-aria-MenuItem.ws-menu-item[data-focused],
+.react-aria-MenuItem.ws-menu-item:hover {
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  color: var(--ink);
+}
+
+/* Move Dialog */
+.ws-move-dialog {
+  width: min(520px, calc(100% - 2 * var(--gutter)));
+}
+
+.ws-move-tree-container {
+  max-height: 320px;
+  overflow-y: auto;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0.5rem;
+  margin: 1rem 0;
+  background: var(--paper);
+}
+
+.ws-move-tree .react-aria-TreeItem[data-disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Folder view */
+.ws-folder-view {
+  display: flex;
+  flex-direction: column;
+}
+
+.ws-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.ws-breadcrumb a {
+  color: var(--ink-soft);
+  text-decoration: none;
+  transition: color 0.15s var(--ease);
+}
+
+.ws-breadcrumb a:hover {
+  color: var(--accent);
+}
+
+.ws-breadcrumb [aria-current="page"] {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.ws-breadcrumb-sep {
+  color: var(--line);
+  user-select: none;
+  font-size: 0.85rem;
+}
+
+.ws-folder-view-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.ws-folder-view-title-area {
+  flex: 1 1 200px;
+}
+
+.ws-folder-heading {
+  margin: 0;
+  font-size: 1.5rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.015em;
+}
+
+.ws-folder-view-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* Folder cards grid */
+.ws-folder-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.ws-folder-card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 1.1rem;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  color: var(--ink);
+  transition:
+    border-color 0.2s var(--ease),
+    transform 0.15s var(--ease),
+    box-shadow 0.2s var(--ease);
+}
+
+.ws-folder-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.ws-folder-card-icon {
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.ws-folder-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.ws-folder-card-title {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ws-folder-card:hover .ws-folder-card-title {
+  color: var(--accent);
+}
+
+.ws-folder-card-count {
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+}
+
+/* Accessibility: prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .ws-folder-card,
+  .ws-tree-chevron,
+  .ws-chevron-icon,
+  .ws-icon-button,
+  .ws-root-link,
+  .react-aria-TreeItem {
+    transition: none !important;
+    transform: none !important;
+  }
+}
