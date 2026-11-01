@@ -48,6 +48,8 @@ photos seen online are cached as you browse, and the **Going off-grid?** tile (P
 
 Icons are generated from `public/assets/favicon.svg` with `npm run icons` (config: `pwa-assets.config.ts`) and committed.
 
+When a new version is deployed, open pages show a **"A new version of the guide is available — Reload / Later"** toast (checked hourly and whenever the tab becomes visible). First-time visitors see a short **"Ready to work offline."** instead.
+
 ## Editing content
 
 - `src/data/itinerary.js` — the 15 days

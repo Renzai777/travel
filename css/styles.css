@@ -331,6 +331,29 @@ a { color: var(--accent); }
 .reveal.in { opacity: 1; transform: none; }
 
 /* ---------- responsive ---------- */
+/* Update / offline-ready toast (E2-S3) */
+.update-toast {
+  position: fixed; z-index: 150; left: 50%; bottom: max(1rem, env(safe-area-inset-bottom));
+  translate: -50% 0; width: min(560px, calc(100% - 2 * var(--gutter)));
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem 1rem;
+  padding: .9rem 1rem .9rem 1.25rem; border-radius: 16px;
+  background: var(--ink); color: var(--paper); box-shadow: var(--shadow);
+  font: 500 .95rem var(--font-body); animation: toast-in .45s var(--ease);
+}
+.update-toast-text { margin: 0; flex: 1 1 220px; }
+.update-toast-actions { display: flex; gap: .5rem; }
+.update-toast button {
+  font: inherit; font-weight: 700; border-radius: 99px; padding: .5rem 1rem; cursor: pointer;
+  border: 1px solid color-mix(in srgb, var(--paper) 40%, transparent);
+}
+.update-toast-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+/* White on the dark-mode accent (#f08a4b) is only ~2.5:1, so use the dark paper colour there (~7:1). */
+:root[data-theme="dark"] .update-toast-primary { color: #12161b; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .update-toast-primary { color: #12161b; } }
+.update-toast-secondary { background: transparent; color: var(--paper); }
+.update-toast button:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+@keyframes toast-in { from { opacity: 0; translate: -50% 1rem; } to { opacity: 1; translate: -50% 0; } }
+
 @media (max-width: 960px) {
   .route-grid, .explorer { grid-template-columns: 1fr; }
   .alt-card { transform: none; }
@@ -352,4 +375,5 @@ a { color: var(--accent); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
   .reveal { opacity: 1; transform: none; }
+  .update-toast { animation: none; }
 }
