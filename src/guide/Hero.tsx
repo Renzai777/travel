@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { Photo } from "../components/Photo";
 import { Stats } from "./Stats";
 import { reduceMotion } from "../lib/motion";
@@ -9,7 +9,7 @@ const HERO_KEYS = ["hero-1", "haridwar-1", "vrindavan-1", "hero-2", "nainital-2"
 
 const slides = HERO_KEYS.map((key) => PHOTOS.find((p) => p.key === key)).filter((p): p is PhotoType => Boolean(p));
 
-export function Hero() {
+export function Hero({ onNavigate }: { onNavigate: (e: MouseEvent<HTMLAnchorElement>) => void }) {
   const [active, setActive] = useState(0);
   const layer1Ref = useRef<SVGGElement>(null);
   const layer2Ref = useRef<SVGGElement>(null);
@@ -97,10 +97,10 @@ export function Hero() {
           the lakes of Kumaon — climbing from 170 m to 3,000 m.
         </p>
         <div className="hero-cta">
-          <a className="btn btn-primary" href="#days">
+          <a className="btn btn-primary" href="/days" onClick={onNavigate}>
             See the 15 days
           </a>
-          <a className="btn btn-ghost" href="#places">
+          <a className="btn btn-ghost" href="/places" onClick={onNavigate}>
             Explore 12 places
           </a>
         </div>
