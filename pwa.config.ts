@@ -1,4 +1,5 @@
 import type { VitePWAOptions } from "vite-plugin-pwa";
+import { FONT_CSS_CACHE, FONT_FILE_CACHE, PHOTO_CACHE } from "./src/pwa/cacheNames";
 
 /**
  * PWA settings (docs/plans/epic-2-pwa.md). Only the app shell is precached; photos (28 MB) are handled at runtime in E2-S2.
@@ -32,9 +33,35 @@ export const pwaOptions: Partial<VitePWAOptions> = {
   },
   workbox: {
     globPatterns: ["**/*.{html,js,css,svg,png}"], // manifest.webmanifest is added by the plugin itself
-    // Photos are excluded from precache on purpose (28 MB); they are cached at runtime (E2-S2).
+    // Photos are excluded from precache on purpose (28 MB); they are cached at runtime below, or all at once via "Save photos for offline".
     globIgnores: ["**/assets/img/**"],
     navigateFallback: "/index.html",
     cleanupOutdatedCaches: true,
+    runtimeCaching: [
+      {
+        // Same-origin photos: served from cache once seen (or saved via the offline tile).
+        urlPattern: ({ url, sameOrigin }) => sameOrigin && url.pathname.startsWith("/assets/img/"),
+        handler: "CacheFirst",
+        options: {
+          cacheName: PHOTO_CACHE,
+          cacheableResponse: { statuses: [0, 200] },
+          expiration: { maxEntries: 60 },
+        },
+      },
+      {
+        urlPattern: ({ url }) => url.origin === "https://fonts.googleapis.com",
+        handler: "StaleWhileRevalidate",
+        options: { cacheName: FONT_CSS_CACHE, cacheableResponse: { statuses: [0, 200] } },
+      },
+      {
+        urlPattern: ({ url }) => url.origin === "https://fonts.gstatic.com",
+        handler: "CacheFirst",
+        options: {
+          cacheName: FONT_FILE_CACHE,
+          cacheableResponse: { statuses: [0, 200] },
+          expiration: { maxEntries: 30, maxAgeSeconds: 60 * 60 * 24 * 365 },
+        },
+      },
+    ],
   },
 };
