@@ -40,9 +40,10 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         # `shell: bash` adds -o pipefail, so a failed deploy is not masked by `tee` succeeding.
+        # No --prebuilt: previews need a Preview build, which `cf previews deploy` makes itself.
         shell: bash
         run: |
-          npx cf previews deploy --prebuilt --mode production 2>&1 | tee preview.log
+          npx cf previews deploy 2>&1 | tee preview.log
           {
             echo "### Cloudflare preview"
             echo '```'
