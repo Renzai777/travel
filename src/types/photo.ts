@@ -8,6 +8,8 @@ export type Photo = {
   source: string;
 };
 
+export type Lens = "culture" | "food" | "geography" | "shopping" | "activities";
+
 export type Place = {
   id: string;
   name: string;
@@ -16,4 +18,12 @@ export type Place = {
   altitude: number;
   coords: [number, number];
   tagline: string;
+  region: string;
+  intro: string;
+  culture: string[];
+  food: string[];
+  geography: string[];
+  shopping: string[];
+  activities: string[];
+  tips: string[];
 };
