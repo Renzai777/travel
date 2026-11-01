@@ -49,9 +49,15 @@ export const pwaOptions: Partial<VitePWAOptions> = {
         },
       },
       {
+        // CacheFirst (not StaleWhileRevalidate): our font list is fixed, and a background refresh on every load only
+        // produced failed ERR_INTERNET_DISCONNECTED requests offline. Refreshed after 30 days.
         urlPattern: ({ url }) => url.origin === "https://fonts.googleapis.com",
-        handler: "StaleWhileRevalidate",
-        options: { cacheName: FONT_CSS_CACHE, cacheableResponse: { statuses: [0, 200] } },
+        handler: "CacheFirst",
+        options: {
+          cacheName: FONT_CSS_CACHE,
+          cacheableResponse: { statuses: [0, 200] },
+          expiration: { maxEntries: 5, maxAgeSeconds: 60 * 60 * 24 * 30 },
+        },
       },
       {
         urlPattern: ({ url }) => url.origin === "https://fonts.gstatic.com",
