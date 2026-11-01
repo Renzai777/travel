@@ -44,7 +44,7 @@ Never run `cf init` here — `cloudflare.config.ts` already exists, and auto-con
 
 The site is an installable PWA (`vite-plugin-pwa`, settings in `pwa.config.ts`). The service worker is only generated in
 production builds, so test it with `npm run build && npm run preview`, not `npm run dev`. Only the app shell is precached;
-offline photos come in E2-S2 (see `docs/plans/epic-2-pwa.md`).
+photos seen online are cached as you browse, and the **Going off-grid?** tile (Plan section) saves all of them (~28 MB) at once.
 
 Icons are generated from `public/assets/favicon.svg` with `npm run icons` (config: `pwa-assets.config.ts`) and committed.
 
