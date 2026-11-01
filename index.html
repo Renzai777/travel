@@ -19,33 +19,7 @@
   <div id="root"></div>
 
   <main id="main">
-    <section class="section route" id="route" aria-labelledby="route-heading">
-      <div class="section-head">
-        <p class="eyebrow">The shape of the trip</p>
-        <h2 id="route-heading">One long climb north</h2>
-        <p>Hover or tap a stop. The map is drawn from real coordinates; the line below traces how high you'll be each night.</p>
-      </div>
-      <div class="route-grid">
-        <figure class="map-card">
-          <svg id="routeMap" viewBox="0 0 520 560" role="img" aria-label="Route map of the trip"></svg>
-          <figcaption id="mapCaption">Pune lies ~1,400 km south — you fly in to Delhi.</figcaption>
-        </figure>
-        <figure class="alt-card">
-          <figcaption><strong>Altitude by night</strong><span>metres above sea level</span></figcaption>
-          <svg id="altChart" viewBox="0 0 640 300" role="img" aria-label="Altitude profile across 15 days"></svg>
-        </figure>
-      </div>
-      <aside class="prayag" aria-labelledby="prayag-heading">
-        <h3 id="prayag-heading">You'll pass all five Panch Prayag</h3>
-        <ol>
-          <li><b>Devprayag</b> Bhagirathi + Alaknanda</li>
-          <li><b>Rudraprayag</b> + Mandakini</li>
-          <li><b>Karnaprayag</b> + Pindar</li>
-          <li><b>Nandprayag</b> + Nandakini</li>
-          <li><b>Vishnuprayag</b> + Dhauliganga</li>
-        </ol>
-      </aside>
-    </section>
+    <div id="route-root" style="display: contents"></div>
 
     <section class="section days" id="days" aria-labelledby="days-heading">
       <div class="section-head">
