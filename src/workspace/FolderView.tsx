@@ -1,27 +1,15 @@
-import { useState, type MouseEvent } from "react";
-import { Button } from "react-aria-components";
-import type * as Y from "yjs";
+import type { MouseEvent } from "react";
 import { appNavigate } from "../routing/location";
-import type { Member } from "./device";
-import { MoveDialog } from "./MoveDialog";
-import { NameDialog } from "./NameDialog";
-import { ROOT, createFolder, pathTo, renameNode, type FolderTree } from "./tree";
+import { pathTo, type FolderTree } from "./tree";
 import { folderPath } from "./wsRoutes";
 
 export interface FolderViewProps {
-  doc: Y.Doc;
   wsId: string;
   tree: FolderTree;
   folderId: string | null;
-  member: Member | null;
 }
 
-export function FolderView({ doc, wsId, tree, folderId, member }: FolderViewProps) {
-  const [isNewFolderOpen, setIsNewFolderOpen] = useState(false);
-  const [isRenameOpen, setIsRenameOpen] = useState(false);
-  const [isMoveDialogOpen, setIsMoveDialogOpen] = useState(false);
-
-  const actor = { memberId: member?.id ?? "unknown" };
+export function FolderView({ wsId, tree, folderId }: FolderViewProps) {
   const currentFolder = folderId ? tree.byId.get(folderId) : null;
   const headingTitle = currentFolder ? currentFolder.title : "All files";
   const children = folderId ? (currentFolder?.children ?? []) : tree.roots;
@@ -65,28 +53,12 @@ export function FolderView({ doc, wsId, tree, folderId, member }: FolderViewProp
         <div className="ws-folder-view-title-area">
           <h2 className="ws-folder-heading">{headingTitle}</h2>
         </div>
-
-        <div className="ws-folder-view-actions">
-          <Button className="ws-button ws-button-primary" onPress={() => setIsNewFolderOpen(true)}>
-            New folder
-          </Button>
-          {folderId !== null && (
-            <>
-              <Button className="ws-button ws-button-secondary" onPress={() => setIsRenameOpen(true)}>
-                Rename
-              </Button>
-              <Button className="ws-button ws-button-secondary" onPress={() => setIsMoveDialogOpen(true)}>
-                Move to…
-              </Button>
-            </>
-          )}
-        </div>
       </div>
 
       {children.length === 0 ? (
         <p className="ws-empty">
-          No folders here yet. Create one to start organising — videos, links, notes and boards arrive in the next
-          updates.
+          No folders here yet. Use + or the … menu in the sidebar to create one — videos, links, notes and boards arrive
+          in the next updates.
         </p>
       ) : (
         <div className="ws-folder-grid">
@@ -109,41 +81,6 @@ export function FolderView({ doc, wsId, tree, folderId, member }: FolderViewProp
             </a>
           ))}
         </div>
-      )}
-
-      <NameDialog
-        isOpen={isNewFolderOpen}
-        onOpenChange={setIsNewFolderOpen}
-        title="New folder"
-        submitLabel="Create"
-        initialValue=""
-        onSubmit={(name) => {
-          createFolder(doc, folderId ?? ROOT, name, actor);
-        }}
-      />
-
-      {folderId !== null && (
-        <NameDialog
-          isOpen={isRenameOpen}
-          onOpenChange={setIsRenameOpen}
-          title="Rename folder"
-          submitLabel="Save"
-          initialValue={currentFolder?.title ?? ""}
-          onSubmit={(name) => {
-            renameNode(doc, folderId, name, actor);
-          }}
-        />
-      )}
-
-      {folderId !== null && (
-        <MoveDialog
-          isOpen={isMoveDialogOpen}
-          onOpenChange={setIsMoveDialogOpen}
-          doc={doc}
-          tree={tree}
-          nodeIds={[folderId]}
-          member={member}
-        />
       )}
     </div>
   );

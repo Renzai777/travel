@@ -3,6 +3,10 @@ import {
   Button,
   Collection,
   DropIndicator,
+  Menu,
+  MenuItem,
+  MenuTrigger,
+  Popover,
   Tree,
   TreeItem,
   TreeItemContent,
@@ -13,7 +17,19 @@ import type * as Y from "yjs";
 import { store } from "../lib/storage";
 import { appNavigate } from "../routing/location";
 import type { Member } from "./device";
-import { RECOVERED, isSelfOrAncestor, moveNodes, pathTo, type FolderNode, type FolderTree } from "./tree";
+import { MoveDialog } from "./MoveDialog";
+import { NameDialog } from "./NameDialog";
+import {
+  ROOT,
+  RECOVERED,
+  createFolder,
+  isSelfOrAncestor,
+  moveNodes,
+  pathTo,
+  renameNode,
+  type FolderNode,
+  type FolderTree,
+} from "./tree";
 import { folderPath } from "./wsRoutes";
 
 export interface FolderSidebarProps {
@@ -26,6 +42,14 @@ export interface FolderSidebarProps {
 
 export function FolderSidebar({ doc, wsId, tree, currentFolderId, member }: FolderSidebarProps) {
   const storageKey = `ws.expanded.${wsId}`;
+  const actor = { memberId: member?.id ?? "unknown" };
+
+  const [dialog, setDialog] = useState<
+    | { kind: "new"; parentId: string }
+    | { kind: "rename"; id: string; title: string }
+    | { kind: "move"; id: string }
+    | null
+  >(null);
 
   const readExpanded = useCallback((): Set<string> => {
     try {
@@ -46,6 +70,19 @@ export function FolderSidebar({ doc, wsId, tree, currentFolderId, member }: Fold
     (keys: Set<string>) => {
       setExpandedKeys(keys);
       store.set(storageKey, JSON.stringify([...keys]));
+    },
+    [storageKey],
+  );
+
+  const expandKey = useCallback(
+    (key: string) => {
+      setExpandedKeys((prev) => {
+        if (prev.has(key)) return prev;
+        const next = new Set(prev);
+        next.add(key);
+        store.set(storageKey, JSON.stringify([...next]));
+        return next;
+      });
     },
     [storageKey],
   );
@@ -186,6 +223,33 @@ export function FolderSidebar({ doc, wsId, tree, currentFolderId, member }: Fold
               📁
             </span>
             <span className="ws-tree-title">{node.title}</span>
+            <MenuTrigger>
+              <Button className="ws-row-menu" aria-label={`Actions for ${node.title}`}>
+                …
+              </Button>
+              <Popover className="react-aria-Popover">
+                <Menu className="react-aria-Menu" aria-label={`Actions for ${node.title}`}>
+                  <MenuItem
+                    className="react-aria-MenuItem"
+                    onAction={() => {
+                      expandKey(node.id);
+                      setDialog({ kind: "new", parentId: node.id });
+                    }}
+                  >
+                    New subfolder
+                  </MenuItem>
+                  <MenuItem
+                    className="react-aria-MenuItem"
+                    onAction={() => setDialog({ kind: "rename", id: node.id, title: node.title })}
+                  >
+                    Rename
+                  </MenuItem>
+                  <MenuItem className="react-aria-MenuItem" onAction={() => setDialog({ kind: "move", id: node.id })}>
+                    Move to…
+                  </MenuItem>
+                </Menu>
+              </Popover>
+            </MenuTrigger>
           </div>
         )}
       </TreeItemContent>
@@ -197,6 +261,13 @@ export function FolderSidebar({ doc, wsId, tree, currentFolderId, member }: Fold
     <div className="ws-aside-section ws-folders-sidebar">
       <div className="ws-folders-header">
         <h3 className="ws-section-title">Folders</h3>
+        <Button
+          className="ws-sidebar-add"
+          aria-label="New folder"
+          onPress={() => setDialog({ kind: "new", parentId: ROOT })}
+        >
+          +
+        </Button>
       </div>
 
       <nav aria-label="Root folder" className="ws-root-link-container">
@@ -248,6 +319,38 @@ export function FolderSidebar({ doc, wsId, tree, currentFolderId, member }: Fold
           </Tree>
         </div>
       )}
+
+      <NameDialog
+        isOpen={dialog?.kind === "new" || dialog?.kind === "rename"}
+        onOpenChange={(open) => {
+          if (!open) setDialog(null);
+        }}
+        title={dialog?.kind === "rename" ? "Rename folder" : "New folder"}
+        submitLabel={dialog?.kind === "rename" ? "Save" : "Create"}
+        initialValue={dialog?.kind === "rename" ? dialog.title : ""}
+        onSubmit={(name) => {
+          if (dialog?.kind === "new") {
+            createFolder(doc, dialog.parentId, name, actor);
+            if (dialog.parentId !== ROOT) {
+              expandKey(dialog.parentId);
+            }
+          } else if (dialog?.kind === "rename") {
+            renameNode(doc, dialog.id, name, actor);
+          }
+          setDialog(null);
+        }}
+      />
+
+      <MoveDialog
+        isOpen={dialog?.kind === "move"}
+        onOpenChange={(open) => {
+          if (!open) setDialog(null);
+        }}
+        doc={doc}
+        tree={tree}
+        nodeIds={dialog?.kind === "move" ? [dialog.id] : []}
+        member={member}
+      />
     </div>
   );
 }

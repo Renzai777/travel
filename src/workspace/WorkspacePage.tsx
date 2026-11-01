@@ -256,7 +256,7 @@ export function WorkspacePage({ wsId, folderId }: WorkspacePageProps) {
               </p>
             </div>
           ) : (
-            <FolderView doc={handle.doc} wsId={wsId} tree={tree} folderId={folderId} member={member} />
+            <FolderView wsId={wsId} tree={tree} folderId={folderId} />
           )}
         </section>
       </div>
