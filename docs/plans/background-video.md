@@ -63,7 +63,7 @@ accessibility or the offline app.
 
 - Same-origin `/media/*` via the Worker: `media-src` falls back to `default-src 'self'`, so nothing to add.
 - The Worker sets `Cache-Control: public, max-age=31536000, immutable` on `/media/*` (versioned filenames). `_headers` doesn't apply to Worker responses.
-- **Depends on Epic 3** (Worker entrypoint + R2 binding). Schedule this story after E3-S1.
+- **Depends on Epic 3** (Worker entrypoint + R2 binding, added in E3-S4). Schedule this story after E3-S4.
 
 ## Acceptance (when scheduled)
 
