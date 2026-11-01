@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import { SEASONS, BUDGET, PACKING, ALERTS } from "../data/planning";
 import { formatInr } from "../lib/format";
+import { SaveOffline } from "../pwa/SaveOffline";
 
 export function Plan() {
   const low = BUDGET.reduce((a, b) => a + b.low, 0);
@@ -83,6 +84,7 @@ export function Plan() {
             </li>
           </ul>
         </article>
+        <SaveOffline />
       </div>
     </section>
   );

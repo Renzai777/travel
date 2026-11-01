@@ -290,6 +290,12 @@ a { color: var(--accent); }
 .tile-etiquette { grid-column: span 6; background: linear-gradient(120deg, color-mix(in srgb, var(--gold) 22%, var(--card)), var(--card)); }
 .tile-etiquette ul { columns: 2 320px; gap: 2rem; padding-left: 1.2rem; margin: 0; }
 .tile-etiquette li { margin-bottom: .5rem; break-inside: avoid; }
+.tile-offline { grid-column: span 6; display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1.5rem; }
+.tile-offline h3 { margin: 0; flex: 1 1 260px; }
+.offline-status { margin: 0; flex: 2 1 320px; color: var(--ink-soft); }
+.tile-offline progress { flex-basis: 100%; height: .5rem; accent-color: var(--accent); }
+.tile-offline .btn { border: 0; cursor: pointer; font: inherit; font-weight: 700; }
+.tile-offline .btn:disabled { opacity: .6; cursor: progress; }
 .season { list-style: none; margin: 0; padding: 0; display: grid; gap: .6rem; }
 .season li { display: grid; grid-template-columns: 6.5rem auto 1fr; gap: .25rem .75rem; align-items: center; padding: .6rem 0; border-top: 1px solid var(--line); }
 .season p { grid-column: 1 / -1; margin: 0; font-size: .92rem; color: var(--ink-soft); }

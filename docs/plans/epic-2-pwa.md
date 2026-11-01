@@ -17,7 +17,7 @@ Plan written by Claude and reviewed by codex. Implemented story by story by agy 
    **"Save photos for offline"** (28 MB, opt-in). Recompressing the photos is a separate perf story (E5).
 2. Photo URLs become **root-relative** (`/assets/img/…`). Relative URLs break on nested paths and wouldn't match the cache rule.
 3. `registerType: "prompt"`: never reload under the user. An update toast in E2-S3.
-4. CSP `connect-src` for Google Fonts is added **only if** a real browser shows the service worker's font fetches being blocked (E2-S2 verification).
+4. CSP `connect-src` for Google Fonts: **confirmed needed** (E2-S2). On Cloudflare the service worker's font fetches were blocked by `default-src 'self'`, which broke fonts online too. `connect-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com` was added to `public/_headers`.
 5. Service worker disabled in `vite dev` (`devOptions.enabled: false`).
 
 ## E2-S1 Installable — `feat/E2-S1-installable`
@@ -53,7 +53,7 @@ agy (files):
 
 - `src/data/photos.js` + `tools/fetch_photos.py`: `"src": "assets/img/…"` → `"src": "/assets/img/…"` (46 entries).
 - `pwa.config.ts`: `runtimeCaching` → photos (same-origin `/assets/img/`, CacheFirst `photos`, statuses [0,200], maxEntries 60),
-  Google Fonts CSS (StaleWhileRevalidate `google-fonts-css`), font files (CacheFirst `google-fonts`, 1 year, maxEntries 30).
+  Google Fonts CSS (CacheFirst `google-fonts-css`, 30 days), font files (CacheFirst `google-fonts`, 1 year, maxEntries 30).
 - `src/pwa/savePhotos.ts`: `savePhotosForOffline(urls, onProgress)` → concurrency 4, absolute URLs (`new URL(src, location.origin)`),
   skips already-cached ones, `cache.put` into `photos`, returns `{ saved, failed }`. Also `countSavedPhotos(urls)`.
 - `src/pwa/SaveOffline.tsx` in the footer: states unsupported / idle / saving `n / 46` / done / partial (with "Try again").
