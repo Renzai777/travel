@@ -191,14 +191,32 @@ function BoardCanvas({ doc, title }: { doc: Y.Doc; title: string }) {
       } else if ((e.key === "F" || e.key === "f") && e.shiftKey) {
         e.preventDefault();
         toggleFocusMode();
-      } else if (e.key === "Escape" && focusRef.current) {
-        const { selectedElementIds, openMenu, openPopup, openDialog } = api.getAppState();
-        if (Object.keys(selectedElementIds).length > 0 || openMenu || openPopup || openDialog) return; // Esc closes those first
-        setFocusMode(false);
       }
     };
+    // Esc runs in the capture phase, before Excalidraw's own handler (which can swallow it): the first Esc clears a
+    // selection, the next one leaves focus mode. Menus, dialogs and text editing keep Esc for themselves.
+    const onEscape = (e: KeyboardEvent) => {
+      if (e.key !== "Escape" || !focusRef.current) return;
+      const target = e.target instanceof HTMLElement ? e.target : null;
+      const inBoard = !target || target === document.body || Boolean(containerRef.current?.contains(target));
+      if (!inBoard || (target && isTyping(target))) return;
+      const api = apiRef.current;
+      if (!api) return;
+      const { editingTextElement, selectedElementIds, openMenu, openPopup, openDialog, contextMenu } =
+        api.getAppState();
+      if (editingTextElement || openMenu || openPopup || openDialog || contextMenu) return;
+      if (Object.keys(selectedElementIds).length > 0) {
+        api.updateScene({ appState: { selectedElementIds: {} }, captureUpdate: CaptureUpdateAction.NEVER });
+        return;
+      }
+      setFocusMode(false);
+    };
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    window.addEventListener("keydown", onEscape, true);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("keydown", onEscape, true);
+    };
   }, [newNote]);
 
   const renderTopRightUI = (isMobile: boolean) => (
