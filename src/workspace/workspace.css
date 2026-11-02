@@ -1104,3 +1104,20 @@
     animation: none !important;
   }
 }
+
+/* Inline rename (double-click a folder name in the sidebar) */
+.ws-inline-rename {
+  flex: 1;
+  min-width: 0;
+  font: inherit;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  padding: 2px 6px;
+  outline: none;
+}
+
+.ws-inline-rename:focus {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 35%, transparent);
+}

@@ -17,6 +17,7 @@ import type * as Y from "yjs";
 import { store } from "../lib/storage";
 import { appNavigate } from "../routing/location";
 import type { Member } from "./device";
+import { InlineRename } from "./InlineRename";
 import { MoveDialog } from "./MoveDialog";
 import { NameDialog } from "./NameDialog";
 import {
@@ -50,6 +51,7 @@ export function FolderSidebar({ doc, wsId, tree, currentFolderId, member }: Fold
     | { kind: "move"; id: string }
     | null
   >(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   const readExpanded = useCallback((): Set<string> => {
     try {
@@ -222,34 +224,58 @@ export function FolderSidebar({ doc, wsId, tree, currentFolderId, member }: Fold
             <span className="ws-folder-icon" aria-hidden="true">
               📁
             </span>
-            <span className="ws-tree-title">{node.title}</span>
-            <MenuTrigger>
-              <Button className="ws-row-menu" aria-label={`Actions for ${node.title}`}>
-                …
-              </Button>
-              <Popover className="react-aria-Popover">
-                <Menu className="react-aria-Menu" aria-label={`Actions for ${node.title}`}>
-                  <MenuItem
-                    className="react-aria-MenuItem"
-                    onAction={() => {
-                      expandKey(node.id);
-                      setDialog({ kind: "new", parentId: node.id });
-                    }}
-                  >
-                    New subfolder
-                  </MenuItem>
-                  <MenuItem
-                    className="react-aria-MenuItem"
-                    onAction={() => setDialog({ kind: "rename", id: node.id, title: node.title })}
-                  >
-                    Rename
-                  </MenuItem>
-                  <MenuItem className="react-aria-MenuItem" onAction={() => setDialog({ kind: "move", id: node.id })}>
-                    Move to…
-                  </MenuItem>
-                </Menu>
-              </Popover>
-            </MenuTrigger>
+            {editingId === node.id ? (
+              <InlineRename
+                initialValue={node.title}
+                label={`Rename ${node.title}`}
+                onCommit={(name) => {
+                  renameNode(doc, node.id, name, actor);
+                  setEditingId(null);
+                }}
+                onCancel={() => setEditingId(null)}
+              />
+            ) : (
+              <span
+                className="ws-tree-title"
+                title="Double-click to rename"
+                onDoubleClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setEditingId(node.id);
+                }}
+              >
+                {node.title}
+              </span>
+            )}
+            {editingId !== node.id && (
+              <MenuTrigger>
+                <Button className="ws-row-menu" aria-label={`Actions for ${node.title}`}>
+                  …
+                </Button>
+                <Popover className="react-aria-Popover">
+                  <Menu className="react-aria-Menu" aria-label={`Actions for ${node.title}`}>
+                    <MenuItem
+                      className="react-aria-MenuItem"
+                      onAction={() => {
+                        expandKey(node.id);
+                        setDialog({ kind: "new", parentId: node.id });
+                      }}
+                    >
+                      New subfolder
+                    </MenuItem>
+                    <MenuItem
+                      className="react-aria-MenuItem"
+                      onAction={() => setDialog({ kind: "rename", id: node.id, title: node.title })}
+                    >
+                      Rename
+                    </MenuItem>
+                    <MenuItem className="react-aria-MenuItem" onAction={() => setDialog({ kind: "move", id: node.id })}>
+                      Move to…
+                    </MenuItem>
+                  </Menu>
+                </Popover>
+              </MenuTrigger>
+            )}
           </div>
         )}
       </TreeItemContent>
