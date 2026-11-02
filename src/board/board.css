@@ -8,6 +8,7 @@
   overflow: hidden;
   border: 1px solid var(--line);
   isolation: isolate;
+  container: board / inline-size;
 }
 
 /* Library and its sidebar trigger are not part of this product. */
@@ -77,7 +78,6 @@
 }
 
 .board-tool,
-.board-swatch-button,
 .board-empty-action {
   display: inline-flex;
   align-items: center;
@@ -96,16 +96,16 @@
   padding: 0 0.6rem;
 }
 
-.board-tool:hover:not(:disabled),
+.board-tool:hover:not(:disabled, [data-disabled]),
 .board-tool:focus-visible,
-.board-swatch-button:hover:not(:disabled),
-.board-swatch-button:focus-visible {
+.board-tool[data-focus-visible],
+.board-tool[data-pressed] {
   border-color: var(--line);
   background: var(--card);
 }
 
 .board-tool:disabled,
-.board-swatch-button:disabled {
+.board-tool[data-disabled] {
   opacity: 0.45;
   cursor: not-allowed;
 }
@@ -121,22 +121,40 @@
   filter: brightness(1.08);
 }
 
-.board-swatches {
-  display: inline-flex;
-  gap: 0.1rem;
-  padding-right: 0.25rem;
-  border-right: 1px solid var(--line);
+.board-tool-note {
+  padding-right: 0.45rem;
 }
 
-.board-swatch-button {
-  width: 28px;
-  height: 28px;
-  justify-content: center;
+.board-tool.board-tool-caret {
+  width: 24px;
   padding: 0;
+  justify-content: center;
+  margin-left: -0.3rem;
+  font-size: 0.75rem;
+  color: var(--ink-soft);
 }
 
-.board-swatch-button[aria-pressed="true"] {
-  border-color: var(--ink-soft);
+/* Above the focus-mode board (z-index 1000). */
+.react-aria-Popover.board-color-popover {
+  z-index: 1100;
+}
+
+.board-color-item {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.board-color-current {
+  margin-left: auto;
+  color: var(--ink-soft);
+}
+
+/* Narrow boards: Fit and Focus give way to Excalidraw's main toolbar. */
+@container board (max-width: 860px) {
+  .board-tool-fit {
+    display: none;
+  }
 }
 
 .board-swatch {

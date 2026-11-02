@@ -1,9 +1,11 @@
+import "./assetPath"; // must stay first: sets the font path before Excalidraw loads
 import "@excalidraw/excalidraw/index.css";
 import { CaptureUpdateAction, Excalidraw, MainMenu, reconcileElements } from "@excalidraw/excalidraw";
 import type { OrderedExcalidrawElement } from "@excalidraw/excalidraw/element/types";
 import type { RemoteExcalidrawElement } from "@excalidraw/excalidraw/data/reconcile";
 import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Button, Menu, MenuItem, MenuTrigger, Popover } from "react-aria-components";
 import * as Y from "yjs";
 import { setFocusMode, toggleFocusMode, useBoardLayout } from "../workspace/boardLayout";
 import { boardDocName } from "../workspace/docNames";
@@ -12,9 +14,6 @@ import { addNote, NOTE_COLORS, type NoteColorId } from "./notes";
 import { LOCAL_ORIGIN, elementsMap, liveCount, readElements, writeElements } from "./sceneSync";
 import { useSiteTheme } from "./useSiteTheme";
 import "./board.css";
-
-// Self-hosted fonts (copied from the package at build time, see vite.config.ts). Must be set before Excalidraw loads a font.
-window.EXCALIDRAW_ASSET_PATH = "/excalidraw-assets/";
 
 /** How long local edits are batched before they are written to the board doc. */
 const WRITE_DELAY_MS = 100;
@@ -235,28 +234,35 @@ function BoardCanvas({ doc, title }: { doc: Y.Doc; title: string }) {
         />
         Note
       </button>
-      {!isMobile && (
-        <span className="board-swatches" role="group" aria-label="Note colour">
-          {NOTE_COLORS.map((c) => (
-            <button
-              key={c.id}
-              type="button"
-              className="board-swatch-button"
-              aria-label={`${c.label} note`}
-              aria-pressed={c.id === noteColor}
-              title={`${c.label} note`}
-              disabled={full}
-              onClick={() => newNote(c.id)}
-            >
-              <span className="board-swatch" style={{ background: c.fill }} aria-hidden="true" />
-            </button>
-          ))}
-        </span>
-      )}
+      <MenuTrigger>
+        <Button className="board-tool board-tool-caret" aria-label="Note colour" isDisabled={full}>
+          <span aria-hidden="true">▾</span>
+        </Button>
+        <Popover className="react-aria-Popover board-color-popover" placement="bottom end">
+          <Menu
+            className="react-aria-Menu"
+            aria-label="New note in colour"
+            onAction={(key) => newNote(String(key) as NoteColorId)}
+          >
+            {NOTE_COLORS.map((c) => (
+              <MenuItem
+                key={c.id}
+                id={c.id}
+                className="react-aria-MenuItem board-color-item"
+                textValue={`${c.label} note`}
+              >
+                <span className="board-swatch" style={{ background: c.fill }} aria-hidden="true" />
+                {c.label} note
+                {c.id === noteColor && <span className="board-color-current">✓</span>}
+              </MenuItem>
+            ))}
+          </Menu>
+        </Popover>
+      </MenuTrigger>
       {!isMobile && (
         <button
           type="button"
-          className="board-tool"
+          className="board-tool board-tool-fit"
           onClick={fitToContent}
           title="Show everything on the board (Shift+1)"
         >
