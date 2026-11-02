@@ -1,0 +1,64 @@
+/* Canvas board (docs/plans/epic-3-canvas.md). The board fills the height it is given by its container. */
+.board {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 420px;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  isolation: isolate;
+}
+
+/* Library and its sidebar trigger are not part of this product. */
+.board .default-sidebar-trigger,
+.board .sidebar-trigger {
+  display: none !important;
+}
+
+.board-empty {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  gap: 0.35rem;
+  padding: 1rem;
+  pointer-events: none;
+  color: var(--ink-soft);
+  z-index: 2;
+}
+
+.board-empty-title {
+  font-family: var(--serif, inherit);
+  font-size: 1.35rem;
+  color: var(--ink);
+  margin: 0;
+}
+
+.board-empty p {
+  margin: 0;
+}
+
+.board-warning {
+  position: absolute;
+  left: 50%;
+  bottom: 4.5rem;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-size: 0.85rem;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.board-message {
+  display: grid;
+  place-content: center;
+  min-height: 420px;
+  color: var(--ink-soft);
+}

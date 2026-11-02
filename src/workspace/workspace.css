@@ -1110,3 +1110,85 @@
 .ws-inline-rename:focus {
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 35%, transparent);
 }
+
+/* Canvas boards (E3-S3) */
+
+.ws-main:has(.ws-page-board) {
+  max-width: none;
+  padding-block: 1.25rem;
+}
+
+.ws-page-board .ws-grid {
+  align-items: stretch;
+}
+
+.ws-library-board {
+  display: flex;
+  flex-direction: column;
+  padding: 0.75rem;
+  height: calc(100dvh - 12.5rem);
+  min-height: 520px;
+}
+
+.ws-folder-board {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  gap: 0.6rem;
+}
+
+.ws-board-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 1rem;
+  padding: 0 0.25rem;
+}
+
+.ws-board-bar .ws-breadcrumb {
+  flex-basis: 100%;
+}
+
+.ws-board-heading {
+  margin: 0;
+  font-size: 1.35rem;
+}
+
+.ws-subfolder-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.ws-chip {
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 0.85rem;
+}
+
+.ws-chip:hover,
+.ws-chip:focus-visible {
+  border-color: var(--accent);
+}
+
+.ws-board-slot {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+
+.ws-board-slot > * {
+  flex: 1;
+}
+
+@media (max-width: 900px) {
+  .ws-library-board {
+    height: 75dvh;
+    min-height: 420px;
+  }
+}

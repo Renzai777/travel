@@ -191,9 +191,10 @@ export function WorkspacePage({ wsId, folderId }: WorkspacePageProps) {
 
   const members = listMembers(handle.doc);
   const isFolderMissing = Boolean(folderId && !tree.byId.has(folderId));
+  const isBoard = Boolean(folderId && !isFolderMissing);
 
   return (
-    <div className="ws-page">
+    <div className={isBoard ? "ws-page ws-page-board" : "ws-page"}>
       {!member && (
         <MemberDialog
           isOpen={true}
@@ -237,7 +238,7 @@ export function WorkspacePage({ wsId, folderId }: WorkspacePageProps) {
           </div>
         </aside>
 
-        <section className="ws-panel ws-library">
+        <section className={isBoard ? "ws-panel ws-library ws-library-board" : "ws-panel ws-library"}>
           {isFolderMissing ? (
             <div className="ws-empty">
               <p>This folder doesn't exist (any more).</p>
