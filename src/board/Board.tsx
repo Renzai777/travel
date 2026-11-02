@@ -131,7 +131,8 @@ function BoardCanvas({ doc, title }: { doc: Y.Doc; title: string }) {
         }}
         initialData={{
           elements: initialElements,
-          appState: { theme, viewBackgroundColor: theme === "dark" ? "#121212" : "#ffffff" },
+          // Excalidraw renders dark mode by inverting the canvas, so the stored background stays white in both themes.
+          appState: { theme },
           scrollToContent: true,
         }}
         theme={theme}
