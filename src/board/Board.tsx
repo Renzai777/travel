@@ -1,7 +1,6 @@
 import "./assetPath"; // must stay first: sets the font path before Excalidraw loads
 import "@excalidraw/excalidraw/index.css";
 import { CaptureUpdateAction, Excalidraw, MainMenu, reconcileElements } from "@excalidraw/excalidraw";
-import type { ClipboardData } from "@excalidraw/excalidraw/clipboard";
 import type { OrderedExcalidrawElement } from "@excalidraw/excalidraw/element/types";
 import type { RemoteExcalidrawElement } from "@excalidraw/excalidraw/data/reconcile";
 import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
@@ -14,7 +13,7 @@ import { openDoc, type OpenDoc } from "../workspace/openDoc";
 import { addPasted } from "./cards";
 import { CardView } from "./CardView";
 import { addNote, NOTE_COLORS, type NoteColorId } from "./notes";
-import { routePaste } from "./pasteRoute";
+import { isExcalidrawClipboard, routePaste } from "./pasteRoute";
 import { LOCAL_ORIGIN, elementsMap, liveCount, readElements, writeElements } from "./sceneSync";
 import { parseCardUrl, parseSafeUrl } from "./urls";
 import { useSiteTheme } from "./useSiteTheme";
@@ -99,37 +98,6 @@ function BoardCanvas({ doc, title }: { doc: Y.Doc; title: string }) {
     setLinkError(null);
     setToolPicked(true);
     return addPasted(api, [card], undefined, LIMIT);
-  };
-
-  const onPaste = (data: ClipboardData, event: ClipboardEvent | null): boolean => {
-    const api = apiRef.current;
-    if (!api) return true;
-    const target = event?.target instanceof HTMLElement ? event.target : null;
-    if (api.getAppState().editingTextElement || (target && isTyping(target))) return true; // pasting into text: not ours
-    const hasImage =
-      Object.keys(data.files ?? {}).length > 0 ||
-      [...(event?.clipboardData?.files ?? [])].some((f) => f.type.startsWith("image/"));
-    const decision = routePaste({ text: data.text, hasElements: Boolean(data.elements?.length), hasImage });
-    switch (decision.kind) {
-      case "delegate":
-        return true;
-      case "image":
-        api.setToast({ message: "Images arrive in a later update.", closable: true });
-        return false;
-      case "cards":
-        addPasted(
-          api,
-          decision.cards,
-          decision.note ? { text: decision.note, wide: decision.note.length > 80 } : undefined,
-          LIMIT,
-        );
-        setToolPicked(true);
-        return false;
-      case "note":
-        addPasted(api, [], { text: decision.text, wide: decision.wide }, LIMIT);
-        setToolPicked(true);
-        return false;
-    }
   };
 
   const pasteHelp = () => {
@@ -276,6 +244,39 @@ function BoardCanvas({ doc, title }: { doc: Y.Doc; title: string }) {
     };
   }, [newNote]);
 
+  // Paste runs in the capture phase, before Excalidraw's handler (which ignores pastes unless the pointer is over the canvas).
+  // We take links, text and images; Excalidraw keeps its own copied shapes, and pastes into any text field are left alone.
+  useEffect(() => {
+    const onPasteEvent = (e: ClipboardEvent) => {
+      const api = apiRef.current;
+      if (!api || !e.clipboardData) return;
+      const target = e.target instanceof HTMLElement ? e.target : null;
+      const inBoard = !target || target === document.body || Boolean(containerRef.current?.contains(target));
+      if (!inBoard || (target && isTyping(target)) || api.getAppState().editingTextElement) return;
+
+      const text = e.clipboardData.getData("text/plain");
+      const hasImage = [...e.clipboardData.files].some((f) => f.type.startsWith("image/"));
+      const decision = routePaste({ text, hasElements: isExcalidrawClipboard(text), hasImage });
+      if (decision.kind === "delegate") return; // Excalidraw's normal paste
+
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      if (decision.kind === "image") {
+        api.setToast({ message: "Images arrive in a later update.", closable: true });
+        return;
+      }
+      const note =
+        decision.kind === "note"
+          ? { text: decision.text, wide: decision.wide }
+          : decision.note
+            ? { text: decision.note, wide: decision.note.length > 80 }
+            : undefined;
+      if (addPasted(api, decision.kind === "cards" ? decision.cards : [], note, LIMIT)) setToolPicked(true);
+    };
+    window.addEventListener("paste", onPasteEvent, true);
+    return () => window.removeEventListener("paste", onPasteEvent, true);
+  }, []);
+
   const renderTopRightUI = (isMobile: boolean) => (
     <div className="board-tools" role="toolbar" aria-label="Board">
       <button
@@ -284,13 +285,14 @@ function BoardCanvas({ doc, title }: { doc: Y.Doc; title: string }) {
         onClick={() => newNote(noteColor)}
         disabled={full}
         title={full ? "This board is full" : "Add a sticky note (N)"}
+        aria-label="Add a sticky note"
       >
         <span
           className="board-swatch"
           style={{ background: NOTE_COLORS.find((c) => c.id === noteColor)?.fill }}
           aria-hidden="true"
         />
-        Note
+        <span className="board-tool-label">Note</span>
       </button>
       <MenuTrigger>
         <Button className="board-tool board-tool-caret" aria-label="Note colour" isDisabled={full}>
@@ -298,14 +300,14 @@ function BoardCanvas({ doc, title }: { doc: Y.Doc; title: string }) {
         </Button>
         <Popover className="react-aria-Popover board-color-popover" placement="bottom end">
           <Menu
-            className="react-aria-Menu"
             aria-label="New note in colour"
+            className="react-aria-Menu"
             onAction={(key) => newNote(String(key) as NoteColorId)}
           >
             {NOTE_COLORS.map((c) => (
               <MenuItem
-                key={c.id}
                 id={c.id}
+                key={c.id}
                 className="react-aria-MenuItem board-color-item"
                 textValue={`${c.label} note`}
               >
@@ -318,8 +320,9 @@ function BoardCanvas({ doc, title }: { doc: Y.Doc; title: string }) {
         </Popover>
       </MenuTrigger>
       <DialogTrigger onOpenChange={(open) => !open && setLinkError(null)}>
-        <Button className="board-tool" isDisabled={full}>
-          <span aria-hidden="true">🔗</span> Link
+        <Button className="board-tool" isDisabled={full} aria-label="Add a video or link">
+          <span aria-hidden="true">🔗</span>
+          <span className="board-tool-label">Link</span>
         </Button>
         <Popover className="react-aria-Popover board-color-popover" placement="bottom end">
           <Dialog className="board-link-dialog" aria-label="Add a video or link">
@@ -395,7 +398,6 @@ function BoardCanvas({ doc, title }: { doc: Y.Doc; title: string }) {
         }}
         theme={theme}
         onChange={onChange}
-        onPaste={onPaste}
         validateEmbeddable={(link) => parseSafeUrl(link) !== null}
         renderEmbeddable={(element) => <CardView element={element} apiRef={apiRef} />}
         renderTopRightUI={renderTopRightUI}

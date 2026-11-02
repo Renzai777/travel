@@ -150,8 +150,19 @@
   color: var(--ink-soft);
 }
 
-/* Narrow boards: Fit and Focus give way to Excalidraw's main toolbar. */
-@container board (max-width: 860px) {
+/* Narrower boards: the tools give way to Excalidraw's main toolbar (labels go first, then Fit). */
+@container board (max-width: 1060px) {
+  .board-tool-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+@container board (max-width: 900px) {
   .board-tool-fit {
     display: none;
   }

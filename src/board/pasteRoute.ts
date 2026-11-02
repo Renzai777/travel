@@ -1,5 +1,21 @@
 import { extractUrls, parseCardUrl, type CardUrl } from "./urls";
 
+/** True for Excalidraw's own copy format (copied shapes); those pastes always stay with Excalidraw. */
+export function isExcalidrawClipboard(text: string | undefined): boolean {
+  const t = (text ?? "").trimStart();
+  if (!t.startsWith("{")) return false;
+  try {
+    const parsed: unknown = JSON.parse(t);
+    return (
+      typeof parsed === "object" &&
+      parsed !== null &&
+      String((parsed as { type?: unknown }).type).startsWith("excalidraw")
+    );
+  } catch {
+    return false;
+  }
+}
+
 export const MAX_CARDS_PER_PASTE = 10;
 const MAX_NOTE_LENGTH = 5000;
 const SHORT_NOTE_LENGTH = 80;

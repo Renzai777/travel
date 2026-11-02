@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { routePaste } from "./pasteRoute";
+import { isExcalidrawClipboard, routePaste } from "./pasteRoute";
 
 describe("pasteRoute", () => {
   it("delegates or flags images correctly based on element and image presence", () => {
@@ -85,5 +85,12 @@ describe("pasteRoute", () => {
       hasImage: false,
     });
     expect(decision).toEqual({ kind: "note", text: "javascript:alert(1)", wide: false });
+  });
+
+  it("detects Excalidraw clipboard payloads", () => {
+    expect(isExcalidrawClipboard('{"type":"excalidraw/clipboard","elements":[]}')).toBe(true);
+    expect(isExcalidrawClipboard('{"type":"other"}')).toBe(false);
+    expect(isExcalidrawClipboard("https://a.com")).toBe(false);
+    expect(isExcalidrawClipboard("{not json")).toBe(false);
   });
 });
