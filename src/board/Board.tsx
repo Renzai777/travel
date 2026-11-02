@@ -1,17 +1,22 @@
 import "./assetPath"; // must stay first: sets the font path before Excalidraw loads
 import "@excalidraw/excalidraw/index.css";
 import { CaptureUpdateAction, Excalidraw, MainMenu, reconcileElements } from "@excalidraw/excalidraw";
+import type { ClipboardData } from "@excalidraw/excalidraw/clipboard";
 import type { OrderedExcalidrawElement } from "@excalidraw/excalidraw/element/types";
 import type { RemoteExcalidrawElement } from "@excalidraw/excalidraw/data/reconcile";
 import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Button, Menu, MenuItem, MenuTrigger, Popover } from "react-aria-components";
+import { Button, Dialog, DialogTrigger, Menu, MenuItem, MenuTrigger, Popover } from "react-aria-components";
 import * as Y from "yjs";
 import { setFocusMode, toggleFocusMode, useBoardLayout } from "../workspace/boardLayout";
 import { boardDocName } from "../workspace/docNames";
 import { openDoc, type OpenDoc } from "../workspace/openDoc";
+import { addPasted } from "./cards";
+import { CardView } from "./CardView";
 import { addNote, NOTE_COLORS, type NoteColorId } from "./notes";
+import { routePaste } from "./pasteRoute";
 import { LOCAL_ORIGIN, elementsMap, liveCount, readElements, writeElements } from "./sceneSync";
+import { parseCardUrl, parseSafeUrl } from "./urls";
 import { useSiteTheme } from "./useSiteTheme";
 import "./board.css";
 
@@ -82,6 +87,59 @@ function BoardCanvas({ doc, title }: { doc: Y.Doc; title: string }) {
   const [toolPicked, setToolPicked] = useState(false);
   const { focus } = useBoardLayout();
   const full = count >= LIMIT;
+  const [linkError, setLinkError] = useState<string | null>(null);
+
+  const addLink = (raw: string): boolean => {
+    const api = apiRef.current;
+    const card = parseCardUrl(raw);
+    if (!api || !card) {
+      setLinkError("That doesn't look like a web link. It should start with https://");
+      return false;
+    }
+    setLinkError(null);
+    setToolPicked(true);
+    return addPasted(api, [card], undefined, LIMIT);
+  };
+
+  const onPaste = (data: ClipboardData, event: ClipboardEvent | null): boolean => {
+    const api = apiRef.current;
+    if (!api) return true;
+    const target = event?.target instanceof HTMLElement ? event.target : null;
+    if (api.getAppState().editingTextElement || (target && isTyping(target))) return true; // pasting into text: not ours
+    const hasImage =
+      Object.keys(data.files ?? {}).length > 0 ||
+      [...(event?.clipboardData?.files ?? [])].some((f) => f.type.startsWith("image/"));
+    const decision = routePaste({ text: data.text, hasElements: Boolean(data.elements?.length), hasImage });
+    switch (decision.kind) {
+      case "delegate":
+        return true;
+      case "image":
+        api.setToast({ message: "Images arrive in a later update.", closable: true });
+        return false;
+      case "cards":
+        addPasted(
+          api,
+          decision.cards,
+          decision.note ? { text: decision.note, wide: decision.note.length > 80 } : undefined,
+          LIMIT,
+        );
+        setToolPicked(true);
+        return false;
+      case "note":
+        addPasted(api, [], { text: decision.text, wide: decision.wide }, LIMIT);
+        setToolPicked(true);
+        return false;
+    }
+  };
+
+  const pasteHelp = () => {
+    containerRef.current?.querySelector<HTMLElement>(".excalidraw")?.focus();
+    apiRef.current?.setToast({
+      message: "Copy a YouTube, Vimeo or web link, then press Ctrl+V (⌘V on a Mac) here.",
+      closable: true,
+      duration: 6000,
+    });
+  };
 
   const newNote = useCallback((color: NoteColorId) => {
     const api = apiRef.current;
@@ -259,6 +317,48 @@ function BoardCanvas({ doc, title }: { doc: Y.Doc; title: string }) {
           </Menu>
         </Popover>
       </MenuTrigger>
+      <DialogTrigger onOpenChange={(open) => !open && setLinkError(null)}>
+        <Button className="board-tool" isDisabled={full}>
+          <span aria-hidden="true">🔗</span> Link
+        </Button>
+        <Popover className="react-aria-Popover board-color-popover" placement="bottom end">
+          <Dialog className="board-link-dialog" aria-label="Add a video or link">
+            {({ close }) => (
+              <form
+                className="board-link-form"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const value = new FormData(e.currentTarget).get("url");
+                  if (typeof value === "string" && addLink(value)) close();
+                }}
+              >
+                <label htmlFor="board-link-input">YouTube, Vimeo or any web link</label>
+                <div className="board-link-row">
+                  <input
+                    id="board-link-input"
+                    name="url"
+                    type="url"
+                    inputMode="url"
+                    autoFocus
+                    required
+                    placeholder="https://…"
+                    autoComplete="off"
+                    spellCheck={false}
+                  />
+                  <button type="submit" className="board-empty-action">
+                    Add
+                  </button>
+                </div>
+                {linkError && (
+                  <p className="board-link-error" role="alert">
+                    {linkError}
+                  </p>
+                )}
+              </form>
+            )}
+          </Dialog>
+        </Popover>
+      </DialogTrigger>
       {!isMobile && (
         <button
           type="button"
@@ -295,6 +395,9 @@ function BoardCanvas({ doc, title }: { doc: Y.Doc; title: string }) {
         }}
         theme={theme}
         onChange={onChange}
+        onPaste={onPaste}
+        validateEmbeddable={(link) => parseSafeUrl(link) !== null}
+        renderEmbeddable={(element) => <CardView element={element} apiRef={apiRef} />}
         renderTopRightUI={renderTopRightUI}
         name={title}
         UIOptions={{
@@ -324,12 +427,18 @@ function BoardCanvas({ doc, title }: { doc: Y.Doc; title: string }) {
                 <span className="board-swatch" style={{ background: NOTE_COLORS[0].fill }} aria-hidden="true" />
                 Add a note
               </button>
+              <button type="button" className="board-empty-action" onClick={pasteHelp}>
+                <span aria-hidden="true">🔗</span>Paste a link
+              </button>
               <button type="button" className="board-empty-action" onClick={startDrawing}>
                 <span aria-hidden="true">✎</span>
                 Start drawing
               </button>
             </div>
-            <p className="board-empty-hint">Or double-click anywhere on the board to type. Press N for a new note.</p>
+            <p className="board-empty-hint">
+              Paste a YouTube or Vimeo link to add a video you can play right here. Double-click anywhere to type, or
+              press N for a note.
+            </p>
           </div>
         </div>
       )}
