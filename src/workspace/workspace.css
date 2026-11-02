@@ -616,7 +616,7 @@
   opacity: 1;
 }
 
-.react-aria-TreeItem[data-selected] .ws-row-menu {
+.react-aria-TreeItem.ws-current .ws-row-menu {
   opacity: 1;
 }
 
@@ -712,7 +712,7 @@
   outline: none;
   position: relative;
   border-radius: 8px;
-  padding-inline-start: calc(var(--tree-item-level, 1) * 14px);
+  padding-inline-start: calc((var(--tree-item-level, 1) - 1) * 16px);
   margin: 1px 0;
   transition:
     background 0.15s var(--ease),
@@ -720,7 +720,11 @@
   cursor: pointer;
 }
 
-.react-aria-TreeItem[data-selected] {
+.react-aria-TreeItem:hover:not(.ws-current) {
+  background: color-mix(in srgb, var(--ink) 6%, transparent);
+}
+
+.react-aria-TreeItem.ws-current {
   background: color-mix(in srgb, var(--accent) 15%, transparent);
 }
 
@@ -748,32 +752,17 @@
   box-sizing: border-box;
 }
 
+/* The whole row is draggable; this button exists only for keyboard and screen reader drag, so it's visually hidden. */
 .ws-drag-handle {
-  background: transparent;
-  border: none;
-  padding: 0 0.15rem;
-  font-size: 0.85rem;
-  color: var(--ink-soft);
-  cursor: grab;
-  line-height: 1;
-  opacity: 0;
-  border-radius: 4px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  user-select: none;
-}
-
-.react-aria-TreeItem:hover .ws-drag-handle,
-.react-aria-TreeItem[data-focused] .ws-drag-handle,
-.react-aria-TreeItem:focus-within .ws-drag-handle {
-  opacity: 1;
-}
-
-@media (hover: none) {
-  .ws-drag-handle {
-    opacity: 0.75;
-  }
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .ws-tree-chevron {

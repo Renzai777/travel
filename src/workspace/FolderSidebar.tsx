@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState, type MouseEvent } from "react";
+import { useCallback, useRef, useState, type MouseEvent } from "react";
 import {
   Button,
   Collection,
@@ -11,7 +11,6 @@ import {
   TreeItem,
   TreeItemContent,
   useDragAndDrop,
-  type Key,
 } from "react-aria-components";
 import type * as Y from "yjs";
 import { store } from "../lib/storage";
@@ -187,10 +186,6 @@ export function FolderSidebar({ doc, wsId, tree, currentFolderId, member }: Fold
     getDropOperation: () => "cancel",
   });
 
-  const selectedKeys = useMemo<Iterable<Key>>(() => {
-    return currentFolderId ? [currentFolderId] : [];
-  }, [currentFolderId]);
-
   const handleAllFilesClick = (e: MouseEvent<HTMLAnchorElement>) => {
     if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     e.preventDefault();
@@ -204,12 +199,13 @@ export function FolderSidebar({ doc, wsId, tree, currentFolderId, member }: Fold
       textValue={node.title}
       href={folderPath(wsId, node.id)}
       hasChildItems={node.children.length > 0}
-      className="react-aria-TreeItem ws-tree-item"
+      className={`react-aria-TreeItem ws-tree-item${node.id === currentFolderId ? " ws-current" : ""}`}
     >
       <TreeItemContent>
         {({ isExpanded, hasChildItems }) => (
           <div className="ws-tree-row-content">
-            <Button slot="drag" className="ws-drag-handle" aria-label={`Move ${node.title}`}>
+            {/* Visually hidden: mouse and touch drag the whole row; keyboard and screen reader users still get a drag button. */}
+            <Button slot="drag" className="ws-drag-handle" aria-label={`Drag ${node.title}`}>
               ⋮⋮
             </Button>
             {hasChildItems ? (
@@ -313,9 +309,6 @@ export function FolderSidebar({ doc, wsId, tree, currentFolderId, member }: Fold
       <Tree
         aria-label="Folders"
         items={tree.roots}
-        selectionMode="single"
-        selectedKeys={selectedKeys}
-        disallowEmptySelection
         expandedKeys={expandedKeys}
         onExpandedChange={(keys) => updateExpanded(new Set([...keys].map(String)))}
         dragAndDropHooks={dragAndDropHooks}
@@ -333,9 +326,6 @@ export function FolderSidebar({ doc, wsId, tree, currentFolderId, member }: Fold
           <Tree
             aria-label="Recovered folders"
             items={tree.recovered}
-            selectionMode="single"
-            selectedKeys={selectedKeys}
-            disallowEmptySelection
             expandedKeys={expandedKeys}
             onExpandedChange={(keys) => updateExpanded(new Set([...keys].map(String)))}
             dragAndDropHooks={recoveredDndHooks}
