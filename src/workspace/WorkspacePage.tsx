@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEvent } from "react";
 import { appNavigate } from "../routing/location";
 import { setActiveDoc } from "./activeDoc";
+import { setFocusMode, setSidebarCollapsed, useBoardLayout } from "./boardLayout";
 import { deviceKeyFor, getMember, upsertDeviceWorkspace, type Member } from "./device";
 import { wsDocName } from "./docNames";
 import { FolderSidebar } from "./FolderSidebar";
@@ -17,7 +18,21 @@ export interface WorkspacePageProps {
   folderId: string | null;
 }
 
+/** "Vipul Singh" → "VS", "anna" → "A". */
+function initials(name: string): string {
+  const letters = name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((w) => w.charAt(0).toUpperCase())
+    .join("");
+  return letters || "?";
+}
+
+const MAX_AVATARS = 5;
+
 export function WorkspacePage({ wsId, folderId }: WorkspacePageProps) {
+  const layout = useBoardLayout();
   // Read only here (render must stay pure); the effect below saves the key and strips it from the address bar.
   // This page remounts per workspace (keyed by wsId), so the initial value is final.
   const [key] = useState<string | null>(() => keyFromHash(window.location.hash) ?? deviceKeyFor(wsId));
@@ -94,6 +109,13 @@ export function WorkspacePage({ wsId, folderId }: WorkspacePageProps) {
     return buildFolderTree(handle.doc);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status, handle, version]);
+
+  // Focus mode belongs to a board: leaving it (or this page) turns it off.
+  const onBoard = Boolean(folderId && tree?.byId.has(folderId));
+  useEffect(() => {
+    if (!onBoard) setFocusMode(false);
+    return () => setFocusMode(false);
+  }, [onBoard]);
 
   const docTitle = handle && status === "ready" ? getTitle(handle.doc) : "Untitled trip";
 
@@ -192,9 +214,19 @@ export function WorkspacePage({ wsId, folderId }: WorkspacePageProps) {
   const members = listMembers(handle.doc);
   const isFolderMissing = Boolean(folderId && !tree.byId.has(folderId));
   const isBoard = Boolean(folderId && !isFolderMissing);
+  const collapsed = isBoard && layout.sidebarCollapsed;
+  const pageClass = [
+    "ws-page",
+    isBoard && "ws-page-board",
+    collapsed && "ws-sidebar-collapsed",
+    isBoard && layout.focus && "ws-page-focus",
+  ]
+    .filter(Boolean)
+    .join(" ");
+  const nameFor = (m: { id: string; name: string }) => (member && m.id === member.id ? `${m.name} (you)` : m.name);
 
   return (
-    <div className={isBoard ? "ws-page ws-page-board" : "ws-page"}>
+    <div className={pageClass}>
       {!member && (
         <MemberDialog
           isOpen={true}
@@ -218,24 +250,56 @@ export function WorkspacePage({ wsId, folderId }: WorkspacePageProps) {
             aria-label="Workspace name"
           />
         </div>
+        {isBoard && (
+          <ul className="ws-avatars" aria-label="People in this workspace">
+            {members.slice(0, MAX_AVATARS).map((m) => (
+              <li key={m.id} className="ws-avatar" style={{ backgroundColor: m.color }} title={nameFor(m)}>
+                <span aria-hidden="true">{initials(m.name)}</span>
+                <span className="sr-only">{nameFor(m)}</span>
+              </li>
+            ))}
+            {members.length > MAX_AVATARS && (
+              <li className="ws-avatar ws-avatar-more" title={members.slice(MAX_AVATARS).map(nameFor).join(", ")}>
+                +{members.length - MAX_AVATARS}
+              </li>
+            )}
+          </ul>
+        )}
         <ShareDialog wsId={wsId} wsKey={key} />
       </div>
 
       <div className="ws-grid">
         <aside className="ws-panel ws-aside">
-          <FolderSidebar doc={handle.doc} wsId={wsId} tree={tree} currentFolderId={folderId} member={member} />
-          <div className="ws-aside-section">
-            <h3 className="ws-section-title">People</h3>
-            <ul className="ws-people-list">
-              {members.map((m) => (
-                <li key={m.id} className="ws-person-item">
-                  <span className="ws-dot" style={{ backgroundColor: m.color }} aria-hidden="true" />
-                  <span className="ws-person-name">{m.name}</span>
-                  {member && m.id === member.id && <span className="ws-you"> (you)</span>}
-                </li>
-              ))}
-            </ul>
+          {isBoard && (
+            <button
+              type="button"
+              className="ws-aside-toggle"
+              aria-expanded={!collapsed}
+              aria-controls="ws-folder-sidebar"
+              aria-label={collapsed ? "Show folders" : "Hide folders"}
+              title={collapsed ? "Show folders" : "Hide folders"}
+              onClick={() => setSidebarCollapsed(!layout.sidebarCollapsed)}
+            >
+              <span aria-hidden="true">{collapsed ? "»" : "«"}</span>
+            </button>
+          )}
+          <div id="ws-folder-sidebar" className="ws-aside-body" hidden={collapsed}>
+            <FolderSidebar doc={handle.doc} wsId={wsId} tree={tree} currentFolderId={folderId} member={member} />
           </div>
+          {!isBoard && (
+            <div className="ws-aside-section">
+              <h3 className="ws-section-title">People</h3>
+              <ul className="ws-people-list">
+                {members.map((m) => (
+                  <li key={m.id} className="ws-person-item">
+                    <span className="ws-dot" style={{ backgroundColor: m.color }} aria-hidden="true" />
+                    <span className="ws-person-name">{m.name}</span>
+                    {member && m.id === member.id && <span className="ws-you"> (you)</span>}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </aside>
 
         <section className={isBoard ? "ws-panel ws-library ws-library-board" : "ws-panel ws-library"}>
