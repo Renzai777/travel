@@ -1,6 +1,6 @@
 import { CaptureUpdateAction, convertToExcalidrawElements } from "@excalidraw/excalidraw";
 import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
-import { NOTE_HEIGHT, NOTE_WIDTH, notePosition } from "./notePlacement";
+import { freeSpot, NOTE_HEIGHT, NOTE_WIDTH } from "./notePlacement";
 
 /** Sticky-note colours: Excalidraw's own pastel palette, so they invert to readable dark tones in dark mode. */
 export const NOTE_COLORS = [
@@ -20,7 +20,7 @@ export function addNote(api: ExcalidrawImperativeAPI, colorId: NoteColorId, cont
   const fill = NOTE_COLORS.find((c) => c.id === colorId)?.fill ?? NOTE_COLORS[0].fill;
   const appState = api.getAppState();
   const elements = api.getSceneElements();
-  const { x, y } = notePosition(
+  const { x, y } = freeSpot(
     {
       scrollX: appState.scrollX,
       scrollY: appState.scrollY,
@@ -29,6 +29,8 @@ export function addNote(api: ExcalidrawImperativeAPI, colorId: NoteColorId, cont
       zoom: appState.zoom.value,
     },
     elements,
+    NOTE_WIDTH,
+    NOTE_HEIGHT,
   );
 
   const [note] = convertToExcalidrawElements([

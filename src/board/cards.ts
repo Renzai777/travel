@@ -2,7 +2,7 @@ import { CaptureUpdateAction, convertToExcalidrawElements, newElementWith } from
 import type { ExcalidrawElement } from "@excalidraw/excalidraw/element/types";
 import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 import { NOTE_COLORS } from "./notes";
-import { NOTE_HEIGHT, NOTE_WIDTH, notePosition } from "./notePlacement";
+import { freeSpot, NOTE_HEIGHT, NOTE_WIDTH } from "./notePlacement";
 import { liveCount } from "./sceneSync";
 import type { CardUrl } from "./urls";
 
@@ -77,9 +77,21 @@ export function addPasted(
     return false;
   }
   const s = api.getAppState();
-  const start = notePosition(
+  const itemCount = cards.length + (note ? 1 : 0);
+  const rowWidth =
+    cards.reduce((sum, c) => sum + (c.kind === "video" ? VIDEO_WIDTH : LINK_WIDTH), 0) +
+    (note ? (note.wide ? WIDE_NOTE_WIDTH : NOTE_WIDTH) : 0) +
+    Math.max(0, itemCount - 1) * GAP;
+  const itemHeights = [
+    ...cards.map((c) => (c.kind === "video" ? VIDEO_HEIGHT : LINK_HEIGHT)),
+    ...(note ? [NOTE_HEIGHT] : []),
+  ];
+  const rowHeight = itemHeights.length > 0 ? Math.max(...itemHeights) : 0;
+  const start = freeSpot(
     { scrollX: s.scrollX, scrollY: s.scrollY, width: s.width, height: s.height, zoom: s.zoom.value },
     existing,
+    rowWidth,
+    rowHeight,
   );
 
   let x = start.x;
