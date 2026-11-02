@@ -1,5 +1,7 @@
 # Epic 3 — Shared trip workspace (library + boards), offline-first
 
+> **Superseded for S3–S10 by [epic-3-canvas.md](epic-3-canvas.md) (v4, 2026-11-02): folders become free-flow canvas boards.** S1 and S2 below are done.
+
 **Plan v3.** The user clarified the goal (2026-11-02): a **collaborative trip workspace** where people **create folders and subfolders** to
 organise **everything** (boards, videos, links, notes, images, PDFs), **tag** it, **watch videos inside the site**, **search and filter**, **comment and react**,
 see **favorites, recents and activity**, and **drag and drop / bulk-edit**. One shared workspace per trip group, via a secret link, no login.
