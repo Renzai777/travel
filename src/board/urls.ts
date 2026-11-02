@@ -93,3 +93,15 @@ export function extractUrls(text: string): string[] {
   const matches = text.match(/https?:\/\/[^\s<>"'`]+/gi) ?? [];
   return [...new Set(matches.map((m) => m.replace(/[),.!?;:\]]+$/, "")))];
 }
+
+/** YouTube thumbnails live at a fixed address built from the validated id. */
+export function youtubeThumbnail(videoId: string): string | null {
+  return /^[A-Za-z0-9_-]{11}$/.test(videoId) ? `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg` : null;
+}
+
+/** Thumbnails stored on cards (e.g. from Vimeo) are untrusted: only https images on Vimeo's image host are shown. */
+export function safeThumbnail(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const safe = parseSafeUrl(value);
+  return safe && safe.url.startsWith("https://") && safe.hostname === "i.vimeocdn.com" ? safe.url : null;
+}

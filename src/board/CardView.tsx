@@ -1,8 +1,9 @@
 import type { ExcalidrawEmbeddableElement, NonDeleted } from "@excalidraw/excalidraw/element/types";
 import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
-import { useRef, useState, useSyncExternalStore, type RefObject } from "react";
-import { cardData, setCardTitle } from "./cards";
-import { parseCardUrl } from "./urls";
+import { useEffect, useRef, useState, useSyncExternalStore, type RefObject } from "react";
+import { cardData, metaFetched, setCardMeta, setCardTitle } from "./cards";
+import { parseCardUrl, youtubeThumbnail } from "./urls";
+import { fetchVimeoMeta } from "./videoMeta";
 
 function subscribeOnline(cb: () => void) {
   window.addEventListener("online", cb);
@@ -38,13 +39,31 @@ export function CardView({
   const parsed = parseCardUrl(element.link ?? "");
   const data = cardData(element);
 
+  const vimeoId = parsed?.kind === "video" && parsed.value.provider === "vimeo" ? parsed.value.videoId : null;
+  const needsMeta = vimeoId !== null && !metaFetched(element);
+  useEffect(() => {
+    if (!vimeoId || !needsMeta || !navigator.onLine) return;
+    const ctrl = new AbortController();
+    void fetchVimeoMeta(vimeoId, ctrl.signal).then((meta) => {
+      if (meta && apiRef.current)
+        setCardMeta(apiRef.current, element.id, { thumbnail: meta.thumbnail, autoTitle: meta.title });
+    });
+    return () => ctrl.abort();
+  }, [vimeoId, needsMeta, element.id, apiRef]);
+
   if (parsed === null) {
     return <div className="board-card board-card-blocked">This link can't be shown.</div>;
   }
 
   const isVideo = parsed.kind === "video" && data?.kind !== "link";
   const fallback = isVideo ? (parsed.value.provider === "youtube" ? "YouTube video" : "Vimeo video") : parsed.value.url;
-  const title = data?.title || fallback;
+  const title = isVideo ? data?.title || data?.autoTitle || fallback : data?.title || fallback;
+  const thumb =
+    parsed.kind === "video"
+      ? parsed.value.provider === "youtube"
+        ? youtubeThumbnail(parsed.value.videoId)
+        : (data?.thumbnail ?? null)
+      : null;
 
   const startRename = () => {
     renameCommitted.current = false;
@@ -132,6 +151,20 @@ export function CardView({
             />
           ) : (
             <>
+              {thumb && (
+                <img
+                  className="board-card-thumb"
+                  src={thumb}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                  referrerPolicy="no-referrer"
+                  draggable={false}
+                  onError={(e) => {
+                    e.currentTarget.hidden = true;
+                  }}
+                />
+              )}
               <span className="board-card-badge">{providerLabel}</span>
               {online ? (
                 <button

@@ -4,7 +4,7 @@ import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 import { NOTE_COLORS } from "./notes";
 import { freeSpot, NOTE_HEIGHT, NOTE_WIDTH } from "./notePlacement";
 import { liveCount } from "./sceneSync";
-import type { CardUrl } from "./urls";
+import { safeThumbnail, type CardUrl } from "./urls";
 
 export const VIDEO_WIDTH = 384;
 export const VIDEO_HEIGHT = 260; // 16:9 player + a title bar
@@ -16,13 +16,23 @@ const WIDE_NOTE_WIDTH = 360;
 export interface CardData {
   kind: "video" | "link";
   title: string;
+  thumbnail?: string;
+  autoTitle?: string;
 }
 
 /** Card data stored in `customData`. Treated as untrusted: the URL always comes from `element.link`, re-checked on render. */
 export function cardData(element: Pick<ExcalidrawElement, "customData">): CardData | null {
   const d = element.customData as Partial<CardData> | undefined;
   if (!d || (d.kind !== "video" && d.kind !== "link")) return null;
-  return { kind: d.kind, title: typeof d.title === "string" ? d.title.slice(0, 300) : "" };
+  const data: CardData = { kind: d.kind, title: typeof d.title === "string" ? d.title.slice(0, 300) : "" };
+  if (typeof d.thumbnail === "string") {
+    const thumb = safeThumbnail(d.thumbnail);
+    if (thumb) data.thumbnail = thumb;
+  }
+  if (typeof d.autoTitle === "string") {
+    data.autoTitle = d.autoTitle.slice(0, 300);
+  }
+  return data;
 }
 
 function cardSkeleton(card: CardUrl, x: number, y: number) {
@@ -128,4 +138,23 @@ export function setCardTitle(api: ExcalidrawImperativeAPI, id: string, title: st
     }),
     captureUpdate: CaptureUpdateAction.IMMEDIATELY,
   });
+}
+
+/** Stores fetched video details on a card (synced like any edit). The user's own title (`title`) is never overwritten. */
+export function setCardMeta(
+  api: ExcalidrawImperativeAPI,
+  id: string,
+  meta: { thumbnail?: string; autoTitle?: string },
+): void {
+  api.updateScene({
+    elements: api.getSceneElementsIncludingDeleted().map((el) => {
+      const data = el.id === id ? cardData(el) : null;
+      return data ? newElementWith(el, { customData: { ...el.customData, ...meta, metaFetched: true } }) : el;
+    }),
+    captureUpdate: CaptureUpdateAction.NEVER, // not an undo step
+  });
+}
+
+export function metaFetched(element: Pick<ExcalidrawElement, "customData">): boolean {
+  return element.customData?.metaFetched === true;
 }

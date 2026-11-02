@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { extractUrls, parseCardUrl, parseSafeUrl } from "./urls";
+import { extractUrls, parseCardUrl, parseSafeUrl, safeThumbnail, youtubeThumbnail } from "./urls";
 
 describe("urls", () => {
   it("parseSafeUrl accepts valid http and https URLs and rejects dangerous or malformed ones", () => {
@@ -116,5 +116,20 @@ describe("urls", () => {
   it("extracts distinct URLs without trailing punctuation", () => {
     const urls = extractUrls("see https://a.com/x, and https://b.org/y). Also https://a.com/x");
     expect(urls).toEqual(["https://a.com/x", "https://b.org/y"]);
+  });
+
+  it("builds YouTube thumbnail URLs only for valid video IDs", () => {
+    expect(youtubeThumbnail("dQw4w9WgXcQ")).toBe("https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg");
+    expect(youtubeThumbnail("bad")).toBeNull();
+  });
+
+  it("validates untrusted thumbnails to allow only https i.vimeocdn.com images", () => {
+    expect(safeThumbnail("https://i.vimeocdn.com/video/452001751-abc_640")).toBe(
+      "https://i.vimeocdn.com/video/452001751-abc_640",
+    );
+    expect(safeThumbnail("http://i.vimeocdn.com/x")).toBeNull();
+    expect(safeThumbnail("https://evil.example/x.jpg")).toBeNull();
+    expect(safeThumbnail("javascript:alert(1)")).toBeNull();
+    expect(safeThumbnail(42)).toBeNull();
   });
 });
