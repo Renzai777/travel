@@ -32,6 +32,7 @@
 .board-empty-title {
   font-family: var(--serif, inherit);
   font-size: 1.35rem;
+  font-weight: 600;
   color: var(--ink);
   margin: 0;
 }
@@ -60,5 +61,127 @@
   display: grid;
   place-content: center;
   min-height: 420px;
+  color: var(--ink-soft);
+}
+
+/* Our tools, top right of the canvas (E3-S4). */
+.board-tools {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem;
+  border-radius: 10px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 8%);
+}
+
+.board-tool,
+.board-swatch-button,
+.board-empty-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.board-tool {
+  height: 32px;
+  padding: 0 0.6rem;
+}
+
+.board-tool:hover:not(:disabled),
+.board-tool:focus-visible,
+.board-swatch-button:hover:not(:disabled),
+.board-swatch-button:focus-visible {
+  border-color: var(--line);
+  background: var(--card);
+}
+
+.board-tool:disabled,
+.board-swatch-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.board-tool-exit {
+  background: var(--accent);
+  color: #fff;
+}
+
+.board-tool-exit:hover,
+.board-tool-exit:focus-visible {
+  background: var(--accent);
+  filter: brightness(1.08);
+}
+
+.board-swatches {
+  display: inline-flex;
+  gap: 0.1rem;
+  padding-right: 0.25rem;
+  border-right: 1px solid var(--line);
+}
+
+.board-swatch-button {
+  width: 28px;
+  height: 28px;
+  justify-content: center;
+  padding: 0;
+}
+
+.board-swatch-button[aria-pressed="true"] {
+  border-color: var(--ink-soft);
+}
+
+.board-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  border: 1px solid rgb(0 0 0 / 18%);
+  flex: none;
+}
+
+/* "Start planning" card: only the card takes clicks, the rest of the canvas stays usable. */
+.board-empty-card {
+  pointer-events: auto;
+  display: grid;
+  gap: 0.85rem;
+  justify-items: center;
+  max-width: 26rem;
+  padding: 1.5rem 1.75rem;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--paper) 92%, transparent);
+  border: 1px solid var(--line);
+  box-shadow: 0 6px 24px rgb(0 0 0 / 8%);
+}
+
+.board-empty-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+}
+
+.board-empty-action {
+  padding: 0.6rem 1rem;
+  border-color: var(--line);
+  background: var(--card);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.board-empty-action:hover,
+.board-empty-action:focus-visible {
+  border-color: var(--accent);
+}
+
+.board-empty-hint {
+  font-size: 0.85rem;
   color: var(--ink-soft);
 }
