@@ -1,15 +1,23 @@
-import { useEffect, useRef, useState, type KeyboardEvent, type MouseEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEvent } from "react";
 import { appNavigate } from "../routing/location";
 import { setActiveDoc } from "./activeDoc";
 import { deviceKeyFor, getMember, upsertDeviceWorkspace, type Member } from "./device";
 import { wsDocName } from "./docNames";
+import { FolderSidebar } from "./FolderSidebar";
+import { FolderView } from "./FolderView";
 import { MemberDialog } from "./MemberDialog";
 import { openDoc, type OpenDoc } from "./openDoc";
 import { getTitle, listMembers, setTitle, upsertMember, wsMaps } from "./schema";
 import { ShareDialog } from "./ShareDialog";
-import { keyFromHash } from "./wsRoutes";
+import { buildFolderTree } from "./tree";
+import { folderPath, keyFromHash } from "./wsRoutes";
 
-export function WorkspacePage({ wsId }: { wsId: string }) {
+export interface WorkspacePageProps {
+  wsId: string;
+  folderId: string | null;
+}
+
+export function WorkspacePage({ wsId, folderId }: WorkspacePageProps) {
   // Read only here (render must stay pure); the effect below saves the key and strips it from the address bar.
   // This page remounts per workspace (keyed by wsId), so the initial value is final.
   const [key] = useState<string | null>(() => keyFromHash(window.location.hash) ?? deviceKeyFor(wsId));
@@ -23,7 +31,7 @@ export function WorkspacePage({ wsId }: { wsId: string }) {
 
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   const [handle, setHandle] = useState<OpenDoc | null>(null);
-  const [, setVersion] = useState(0);
+  const [version, setVersion] = useState(0);
   const [member, setMember] = useState<Member | null>(() => getMember());
 
   useEffect(() => {
@@ -64,7 +72,7 @@ export function WorkspacePage({ wsId }: { wsId: string }) {
   useEffect(() => {
     if (status !== "ready" || !handle) return;
     const doc = handle.doc;
-    const { meta, members } = wsMaps(doc);
+    const { meta, members, nodes } = wsMaps(doc);
 
     const onDeepChange = () => {
       setVersion((v) => v + 1);
@@ -72,20 +80,33 @@ export function WorkspacePage({ wsId }: { wsId: string }) {
 
     meta.observeDeep(onDeepChange);
     members.observeDeep(onDeepChange);
+    nodes.observeDeep(onDeepChange);
 
     return () => {
       meta.unobserveDeep(onDeepChange);
       members.unobserveDeep(onDeepChange);
+      nodes.unobserveDeep(onDeepChange);
     };
   }, [status, handle]);
+
+  const tree = useMemo(() => {
+    if (status !== "ready" || !handle) return null;
+    return buildFolderTree(handle.doc);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status, handle, version]);
 
   const docTitle = handle && status === "ready" ? getTitle(handle.doc) : "Untitled trip";
 
   useEffect(() => {
-    if (status !== "ready" || !handle) return;
-    document.title = `${docTitle} · Trip workspace`;
+    if (status !== "ready" || !handle || !tree) return;
+    if (folderId && tree.byId.has(folderId)) {
+      const folderTitle = tree.byId.get(folderId)?.title ?? "Folder";
+      document.title = `${folderTitle} · ${docTitle}`;
+    } else {
+      document.title = `${docTitle} · Trip workspace`;
+    }
     upsertDeviceWorkspace({ id: wsId, title: docTitle, lastOpened: Date.now() });
-  }, [status, handle, docTitle, wsId]);
+  }, [status, handle, docTitle, wsId, folderId, tree]);
 
   useEffect(() => {
     if (status === "ready" && handle && member) {
@@ -152,7 +173,7 @@ export function WorkspacePage({ wsId }: { wsId: string }) {
     );
   }
 
-  if (status === "error" || !handle) {
+  if (status === "error" || !handle || !tree) {
     return (
       <div className="ws-panel ws-error" role="alert">
         <p>
@@ -169,6 +190,7 @@ export function WorkspacePage({ wsId }: { wsId: string }) {
   }
 
   const members = listMembers(handle.doc);
+  const isFolderMissing = Boolean(folderId && !tree.byId.has(folderId));
 
   return (
     <div className="ws-page">
@@ -200,10 +222,7 @@ export function WorkspacePage({ wsId }: { wsId: string }) {
 
       <div className="ws-grid">
         <aside className="ws-panel ws-aside">
-          <div className="ws-aside-section">
-            <h3 className="ws-section-title">Folders</h3>
-            <p className="ws-aside-hint">Folders arrive in the next update.</p>
-          </div>
+          <FolderSidebar doc={handle.doc} wsId={wsId} tree={tree} currentFolderId={folderId} member={member} />
           <div className="ws-aside-section">
             <h3 className="ws-section-title">People</h3>
             <ul className="ws-people-list">
@@ -219,11 +238,26 @@ export function WorkspacePage({ wsId }: { wsId: string }) {
         </aside>
 
         <section className="ws-panel ws-library">
-          <h3 className="ws-section-title">Library</h3>
-          <p className="ws-empty">
-            This is your shared trip space. Soon you'll organise videos, links, notes, boards and photos here in
-            folders.
-          </p>
+          {isFolderMissing ? (
+            <div className="ws-empty">
+              <p>This folder doesn't exist (any more).</p>
+              <p>
+                <a
+                  href={folderPath(wsId, null)}
+                  onClick={(e) => {
+                    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey)
+                      return;
+                    e.preventDefault();
+                    appNavigate(folderPath(wsId, null));
+                  }}
+                >
+                  Go to the workspace root
+                </a>
+              </p>
+            </div>
+          ) : (
+            <FolderView wsId={wsId} tree={tree} folderId={folderId} />
+          )}
         </section>
       </div>
     </div>

@@ -1,4 +1,5 @@
 import { useEffect, useState, type MouseEvent } from "react";
+import { RouterProvider } from "react-aria-components";
 import { appNavigate } from "../routing/location";
 import { getMember, type Member } from "./device";
 import { MemberChip } from "./MemberChip";
@@ -35,26 +36,28 @@ export default function WorkspaceApp({ pathname }: { pathname: string }) {
   };
 
   return (
-    <div className="ws-app">
-      <header className="ws-header">
-        <a className="ws-back-link" href="/" onClick={(e) => handleNavClick(e, "/")}>
-          ← Guide
-        </a>
-        <a className="ws-wordmark" href="/w" onClick={(e) => handleNavClick(e, "/w")}>
-          Trip workspace
-        </a>
-        <div className="ws-header-right">{member && <MemberChip />}</div>
-      </header>
+    <RouterProvider navigate={(href) => appNavigate(href)} useHref={(href) => href}>
+      <div className="ws-app">
+        <header className="ws-header">
+          <a className="ws-back-link" href="/" onClick={(e) => handleNavClick(e, "/")}>
+            ← Guide
+          </a>
+          <a className="ws-wordmark" href="/w" onClick={(e) => handleNavClick(e, "/w")}>
+            Trip workspace
+          </a>
+          <div className="ws-header-right">{member && <MemberChip />}</div>
+        </header>
 
-      <main id="main" className="ws-main">
-        {route.kind === "new" ? (
-          <NewWorkspace />
-        ) : route.kind === "home" ? (
-          <WorkspacesHome />
-        ) : (
-          <WorkspacePage key={route.wsId} wsId={route.wsId} />
-        )}
-      </main>
-    </div>
+        <main id="main" className="ws-main">
+          {route.kind === "new" ? (
+            <NewWorkspace />
+          ) : route.kind === "home" ? (
+            <WorkspacesHome />
+          ) : (
+            <WorkspacePage key={route.wsId} wsId={route.wsId} folderId={route.folderId} />
+          )}
+        </main>
+      </div>
+    </RouterProvider>
   );
 }

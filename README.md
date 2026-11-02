@@ -55,7 +55,11 @@ When a new version is deployed, open pages show a **"A new version of the guide 
 Each section has its own URL: `/route`, `/days`, `/places` (or `/places/<place>`, e.g. `/places/auli`), `/food`, `/plan`. The address bar
 follows your scrolling, links can be shared, and old `/#plan`-style links redirect. `/board/…` is reserved for the trip board (Epic 3).
 Routing lives in `src/routing/` (no router library).
-`/w` lists the trip workspaces on this device; `/w/new` creates one; a workspace link looks like `/w/<id>#key=<secret>` (the key never leaves the browser except inside links you share).
+`/w` lists the trip workspaces on this device; `/w/new` creates one; a workspace link looks like `/w/<id>#key=<secret>` (the key never leaves the browser except inside links you share); `/w/<id>/f/<folderId>` opens a folder.
+
+## Tests
+
+`npm test` runs the unit tests (Vitest), e.g. the folder-tree convergence tests in `src/workspace/tree.test.ts`.
 
 ## Editing content
 

@@ -30,6 +30,7 @@ jobs:
       - run: npm run typecheck
       - run: npm run lint
       - run: npm run format:check
+      - run: npm test
       - run: npx cf build
       - name: Validate build (no credentials needed)
         run: npx cf deploy --prebuilt --mode production --dry-run

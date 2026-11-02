@@ -1,16 +1,29 @@
 import { isId } from "./ids";
 
 export type WsRoute =
-  { kind: "home" } | { kind: "new" } | { kind: "workspace"; wsId: string } | { kind: "redirect"; to: string };
+  | { kind: "home" }
+  | { kind: "new" }
+  | { kind: "workspace"; wsId: string; folderId: string | null }
+  | { kind: "redirect"; to: string };
 
-/** /w → home, /w/new → new, /w/<id>[/…] → workspace (deeper views arrive in later stories), /board… and anything else → /w. */
+/** /w → home, /w/new → new, /w/<id> or /w/<id>/f/<fid> → workspace, deeper path under /w/<id>/… → redirect to /w/<id>, /board… and anything else → /w. */
 export function parseWsPath(pathname: string): WsRoute {
   const parts = pathname.split("/").filter(Boolean);
   if (parts[0] === "board") return { kind: "redirect", to: "/w" };
   if (parts.length === 1) return { kind: "home" };
   if (parts[1] === "new" && parts.length === 2) return { kind: "new" };
-  if (isId(parts[1])) return { kind: "workspace", wsId: parts[1] };
+  if (isId(parts[1])) {
+    if (parts.length === 2) return { kind: "workspace", wsId: parts[1], folderId: null };
+    if (parts.length === 4 && parts[2] === "f" && isId(parts[3])) {
+      return { kind: "workspace", wsId: parts[1], folderId: parts[3] };
+    }
+    return { kind: "redirect", to: `/w/${parts[1]}` };
+  }
   return { kind: "redirect", to: "/w" };
+}
+
+export function folderPath(wsId: string, folderId: string | null): string {
+  return folderId ? `/w/${wsId}/f/${folderId}` : `/w/${wsId}`;
 }
 
 /** Read and validate `#key=…` from a hash. */
