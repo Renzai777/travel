@@ -1,4 +1,5 @@
 import { cardData } from "../board/cardDetails";
+import { sectionNames } from "../board/sections";
 import { parseCardUrl, youtubeThumbnail } from "../board/urls";
 
 export const NOTE_TEXT_MAX = 2000;
@@ -28,6 +29,8 @@ export interface LibraryRecord {
   provider?: "youtube" | "vimeo";
   thumbnail?: string;
   tagIds: string[];
+  /** Section (frame) name ("" when not in a section). */
+  section: string;
   /** Sticky-note fill colour (a #rrggbb value). */
   color?: string;
   /** Last edit time (ms), for "recent first". */
@@ -62,6 +65,8 @@ export function boardRecords(folderId: string, elements: readonly unknown[]): Li
     if (isRaw(el) && typeof el.id === "string" && el.id && el.isDeleted !== true) live.set(el.id, el);
   }
 
+  const sectionOf = sectionNames([...live.values()]);
+
   // Text bound to a container (a sticky note's label): containerId → text.
   const textOf = new Map<string, string>();
   for (const el of live.values()) {
@@ -76,6 +81,7 @@ export function boardRecords(folderId: string, elements: readonly unknown[]): Li
       id: `${folderId}:${elementId}`,
       folderId,
       elementId,
+      section: typeof el.frameId === "string" ? (sectionOf.get(el.frameId) ?? "") : "",
       updated: typeof el.updated === "number" && Number.isFinite(el.updated) ? el.updated : 0,
     };
 

@@ -629,3 +629,106 @@
   opacity: 0.45;
   cursor: not-allowed;
 }
+
+/* Sections (E3-S8) */
+.board-tool-count {
+  min-width: 1.1rem;
+  padding: 0 0.3rem;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #1e1e1e;
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1.1rem;
+  text-align: center;
+}
+
+.board-sections {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.board-sections-title {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.board-sections-empty,
+.board-sections-hint {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+}
+
+.board-sections-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 2px;
+  max-height: 16rem;
+  overflow-y: auto;
+}
+
+.board-sections-row {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.board-sections-jump {
+  flex: 1;
+  min-width: 0;
+  text-align: start;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.9rem;
+  padding: 0.45rem 0.6rem;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.board-sections-jump:hover,
+.board-sections-edit:hover {
+  background: var(--paper-2);
+}
+
+.board-sections-edit {
+  flex: none;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ink-soft);
+  font: inherit;
+  padding: 0.35rem 0.5rem;
+  cursor: pointer;
+}
+
+.board-sections-jump:focus-visible,
+.board-sections-edit:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+.board-sections-input {
+  flex: 1;
+  min-width: 0;
+  font: inherit;
+  font-size: 0.9rem;
+  padding: 0.4rem 0.55rem;
+  border-radius: 8px;
+  border: 1px solid var(--accent);
+  background: var(--paper);
+  color: var(--ink);
+  outline: none;
+}
+
+.board-sections .board-link-form {
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--line);
+}
