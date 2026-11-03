@@ -1,6 +1,7 @@
 import { CaptureUpdateAction, convertToExcalidrawElements, newElementWith } from "@excalidraw/excalidraw";
 import type { ExcalidrawElement } from "@excalidraw/excalidraw/element/types";
 import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
+import { cleanNotes, cleanTagIds, cleanTitle } from "./cardDetails";
 import { NOTE_COLORS } from "./notes";
 import { freeSpot, NOTE_HEIGHT, NOTE_WIDTH } from "./notePlacement";
 import { liveCount } from "./sceneSync";
@@ -18,13 +19,20 @@ export interface CardData {
   title: string;
   thumbnail?: string;
   autoTitle?: string;
+  tags: string[];
+  notes: string;
 }
 
 /** Card data stored in `customData`. Treated as untrusted: the URL always comes from `element.link`, re-checked on render. */
 export function cardData(element: Pick<ExcalidrawElement, "customData">): CardData | null {
   const d = element.customData as Partial<CardData> | undefined;
   if (!d || (d.kind !== "video" && d.kind !== "link")) return null;
-  const data: CardData = { kind: d.kind, title: typeof d.title === "string" ? d.title.slice(0, 300) : "" };
+  const data: CardData = {
+    kind: d.kind,
+    title: typeof d.title === "string" ? d.title.slice(0, 300) : "",
+    tags: cleanTagIds(d.tags),
+    notes: cleanNotes(d.notes),
+  };
   if (typeof d.thumbnail === "string") {
     const thumb = safeThumbnail(d.thumbnail);
     if (thumb) data.thumbnail = thumb;
@@ -48,7 +56,7 @@ function cardSkeleton(card: CardUrl, x: number, y: number) {
     strokeColor: "transparent",
     backgroundColor: "transparent",
     roundness: { type: 3 as const },
-    customData: { kind: card.kind, title: "" } satisfies CardData,
+    customData: { kind: card.kind, title: "", tags: [], notes: "" } satisfies CardData,
   };
 }
 
@@ -128,13 +136,20 @@ export function addPasted(
   return true;
 }
 
-/** Renames a card. `newElementWith` bumps the version, so the change is saved and synced like any other edit. */
-export function setCardTitle(api: ExcalidrawImperativeAPI, id: string, title: string): void {
-  const clean = title.trim().slice(0, 300);
+/** Saves edits from the Details panel (one undo step). `newElementWith` bumps the version, so the change is saved and synced. */
+export function setCardDetails(
+  api: ExcalidrawImperativeAPI,
+  id: string,
+  patch: { title?: string; tags?: string[]; notes?: string },
+): void {
+  const clean: Partial<CardData> = {};
+  if (patch.title !== undefined) clean.title = cleanTitle(patch.title);
+  if (patch.tags !== undefined) clean.tags = cleanTagIds(patch.tags);
+  if (patch.notes !== undefined) clean.notes = cleanNotes(patch.notes);
   api.updateScene({
     elements: api.getSceneElementsIncludingDeleted().map((el) => {
       const data = el.id === id ? cardData(el) : null;
-      return data ? newElementWith(el, { customData: { ...el.customData, ...data, title: clean } }) : el;
+      return data ? newElementWith(el, { customData: { ...el.customData, ...data, ...clean } }) : el;
     }),
     captureUpdate: CaptureUpdateAction.IMMEDIATELY,
   });

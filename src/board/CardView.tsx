@@ -1,7 +1,9 @@
+import { CaptureUpdateAction } from "@excalidraw/excalidraw";
 import type { ExcalidrawEmbeddableElement, NonDeleted } from "@excalidraw/excalidraw/element/types";
 import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
-import { useEffect, useRef, useState, useSyncExternalStore, type RefObject } from "react";
-import { cardData, metaFetched, setCardMeta, setCardTitle } from "./cards";
+import { useEffect, useState, useSyncExternalStore, type RefObject } from "react";
+import { cardData, metaFetched, setCardMeta } from "./cards";
+import { useBoardTags } from "./tagsContext";
 import { parseCardUrl, youtubeThumbnail } from "./urls";
 import { fetchVimeoMeta } from "./videoMeta";
 
@@ -31,9 +33,7 @@ export function CardView({
 }) {
   const online = useOnline();
   const [playing, setPlaying] = useState(false);
-  const [renaming, setRenaming] = useState(false);
-  const cancelNextBlur = useRef(false);
-  const renameCommitted = useRef(false);
+  const tags = useBoardTags();
 
   // URL from element.link, re-validated on every render (stored/synced data is untrusted).
   const parsed = parseCardUrl(element.link ?? "");
@@ -65,59 +65,17 @@ export function CardView({
         : (data?.thumbnail ?? null)
       : null;
 
-  const startRename = () => {
-    renameCommitted.current = false;
-    cancelNextBlur.current = false;
-    setRenaming(true);
-  };
-
-  const commitRename = (value: string) => {
-    if (cancelNextBlur.current) {
-      cancelNextBlur.current = false;
-      setRenaming(false);
-      return;
-    }
-    if (renameCommitted.current) return;
-    renameCommitted.current = true;
-    if (apiRef.current) {
-      setCardTitle(apiRef.current, element.id, value);
-    }
-    setRenaming(false);
-  };
-
-  const renameInput = (
-    <input
-      className="board-card-input"
-      aria-label="Card title"
-      defaultValue={data?.title ?? ""}
-      maxLength={300}
-      autoFocus
-      onKeyDown={(e) => {
-        e.stopPropagation();
-        if (e.key === "Enter") {
-          commitRename(e.currentTarget.value);
-        } else if (e.key === "Escape") {
-          cancelNextBlur.current = true;
-          setRenaming(false);
-        }
-      }}
-      onBlur={(e) => {
-        commitRename(e.currentTarget.value);
-      }}
-    />
-  );
-
-  const renameButton = data !== null && (
+  const editButton = data !== null && (
     <button
       type="button"
       className="board-card-rename"
-      aria-label="Rename card"
+      aria-label="Edit details"
+      title="Title, tags and notes"
       onClick={() => {
-        if (renaming) {
-          setRenaming(false);
-        } else {
-          startRename();
-        }
+        apiRef.current?.updateScene({
+          appState: { selectedElementIds: { [element.id]: true } },
+          captureUpdate: CaptureUpdateAction.NEVER,
+        });
       }}
     >
       ✎
@@ -128,6 +86,29 @@ export function CardView({
     <a className="board-card-open" href={parsed.value.url} target="_blank" rel="noopener noreferrer">
       Open ↗
     </a>
+  );
+
+  const notesIcon = Boolean(data?.notes) && (
+    <span className="board-card-has-notes" title="Has notes" aria-label="Has notes">
+      📝
+    </span>
+  );
+
+  const knownTags = (data?.tags ?? [])
+    .map((id) => tags.find((t) => t.id === id))
+    .filter((t): t is (typeof tags)[number] => Boolean(t));
+
+  const tagsNode = knownTags.length > 0 && (
+    <div className="board-card-tags">
+      {knownTags.slice(0, 3).map((t) => (
+        <span key={t.id} className="board-tag board-tag-small" style={{ background: t.color }}>
+          {t.name}
+        </span>
+      ))}
+      {knownTags.length > 3 && (
+        <span className="board-tag board-tag-small board-tag-more">+{knownTags.length - 3}</span>
+      )}
+    </div>
   );
 
   if (isVideo) {
@@ -166,6 +147,7 @@ export function CardView({
                 />
               )}
               <span className="board-card-badge">{providerLabel}</span>
+              {tagsNode}
               {online ? (
                 <button
                   type="button"
@@ -182,9 +164,10 @@ export function CardView({
           )}
         </div>
         <div className="board-card-bar">
-          {renaming ? renameInput : <span className="board-card-title">{title}</span>}
+          <span className="board-card-title">{title}</span>
+          {notesIcon}
           {openLink}
-          {renameButton}
+          {editButton}
         </div>
       </div>
     );
@@ -193,10 +176,12 @@ export function CardView({
   return (
     <div className="board-card board-card-link">
       <span className="board-card-host">{parsed.value.hostname}</span>
-      {renaming ? renameInput : <span className="board-card-title">{title}</span>}
+      <span className="board-card-title">{title}</span>
+      {tagsNode}
       <div className="board-card-bar">
+        {notesIcon}
         {openLink}
-        {renameButton}
+        {editButton}
       </div>
     </div>
   );

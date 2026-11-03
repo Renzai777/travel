@@ -1,4 +1,5 @@
 import { lazy, Suspense, type MouseEvent } from "react";
+import type * as Y from "yjs";
 import { appNavigate } from "../routing/location";
 import { pathTo, type FolderTree } from "./tree";
 import { folderPath } from "./wsRoutes";
@@ -9,9 +10,10 @@ export interface FolderViewProps {
   wsId: string;
   tree: FolderTree;
   folderId: string | null;
+  wsDoc: Y.Doc;
 }
 
-export function FolderView({ wsId, tree, folderId }: FolderViewProps) {
+export function FolderView({ wsId, tree, folderId, wsDoc }: FolderViewProps) {
   const currentFolder = folderId ? tree.byId.get(folderId) : null;
   const headingTitle = currentFolder ? currentFolder.title : "All files";
   const children = folderId ? (currentFolder?.children ?? []) : tree.roots;
@@ -112,7 +114,7 @@ export function FolderView({ wsId, tree, folderId }: FolderViewProps) {
             </div>
           }
         >
-          <Board key={folderId} wsId={wsId} folderId={folderId} title={headingTitle} />
+          <Board key={folderId} wsId={wsId} folderId={folderId} title={headingTitle} wsDoc={wsDoc} />
         </Suspense>
       </div>
     </div>
