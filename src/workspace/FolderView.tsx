@@ -29,10 +29,6 @@ export function FolderView({ wsId, tree, folderId, wsDoc }: FolderViewProps) {
   if (folderId === null) {
     return (
       <div className="ws-folder-view">
-        <nav aria-label="Breadcrumb" className="ws-breadcrumb">
-          <span aria-current="page">All files</span>
-        </nav>
-
         <div className="ws-folder-view-header">
           <div className="ws-folder-view-title-area">
             <h2 className="ws-folder-heading">{headingTitle}</h2>
@@ -59,7 +55,11 @@ export function FolderView({ wsId, tree, folderId, wsDoc }: FolderViewProps) {
                 <div className="ws-folder-card-body">
                   <span className="ws-folder-card-title">{child.title}</span>
                   <span className="ws-folder-card-count">
-                    {child.children.length === 1 ? "1 folder" : `${child.children.length} folders`}
+                    {child.children.length === 0
+                      ? "Board"
+                      : child.children.length === 1
+                        ? "Board · 1 subfolder"
+                        : `Board · ${child.children.length} subfolders`}
                   </span>
                 </div>
               </a>

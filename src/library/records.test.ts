@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { boardRecords, snippetOf, type LibraryRecord } from "./records";
+import { boardRecords, linkName, snippetOf, type LibraryRecord } from "./records";
 
 describe("records", () => {
   it("parses a YouTube video card with thumbnail and autoTitle", () => {
@@ -27,7 +27,7 @@ describe("records", () => {
       title: "Spiti road",
       autoTitle: "Spiti road",
       provider: "youtube",
-      thumbnail: "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
+      thumbnail: "https://i.ytimg.com/vi/dQw4w9WgXcQ/mqdefault.jpg",
       host: "www.youtube.com",
       notes: "4:10 Kunzum",
       tagIds: ["t1"],
@@ -66,7 +66,7 @@ describe("records", () => {
     expect(recs).toHaveLength(1);
     expect(recs[0]).toMatchObject({
       kind: "link",
-      title: "https://example.com/a",
+      title: "A · example.com",
       host: "example.com",
       url: "https://example.com/a",
     });
@@ -225,6 +225,19 @@ describe("records", () => {
       const snippet = snippetOf(cardRec);
       expect(snippet).toHaveLength(140);
       expect(snippet.endsWith("…")).toBe(true);
+    });
+  });
+
+  describe("linkName", () => {
+    it("generates readable titles from URLs", () => {
+      expect(linkName("https://www.lonelyplanet.com/india/spiti-valley?x=1", "www.lonelyplanet.com")).toBe(
+        "Spiti valley · lonelyplanet.com",
+      );
+      expect(linkName("https://example.com/", "example.com")).toBe("example.com");
+      expect(linkName("https://x.com/posts/12345", "x.com")).toBe("x.com");
+      expect(linkName("https://a.org/my_trip-plan.html", "a.org")).toBe("My trip plan · a.org");
+      expect(linkName("https://a.org/caf%C3%A9-guide", "a.org")).toBe("Café guide · a.org");
+      expect(linkName("https://a.org/%E0%A4%A", "a.org")).toBe("a.org");
     });
   });
 });

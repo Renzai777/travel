@@ -1,4 +1,4 @@
-import { useMemo, useState, type MouseEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import {
   Button,
   Input,
@@ -45,6 +45,7 @@ export default function Library({ wsId, wsDoc, tree }: LibraryProps) {
   const [tagId, setTagId] = useState<string | null>(null);
   const [folderId, setFolderId] = useState<string | null>(null);
   const [shown, setShown] = useState(PAGE);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const folderLabel = useMemo(
     () =>
@@ -98,6 +99,29 @@ export default function Library({ wsId, wsDoc, tree }: LibraryProps) {
     [search, query, kind, activeTag, scope],
   );
 
+  // How many items of each type match the current search, tag and folder (shown on the type buttons).
+  const kindCounts = useMemo(() => {
+    const counts: Record<KindFilter, number> = { all: 0, video: 0, link: 0, note: 0 };
+    for (const r of search.search(query, { kind: "all", tagId: activeTag, folderIds: scope })) {
+      counts.all++;
+      counts[r.kind]++;
+    }
+    return counts;
+  }, [search, query, activeTag, scope]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "/" || e.ctrlKey || e.metaKey || e.altKey || e.defaultPrevented) return;
+      const t = e.target;
+      if (t instanceof HTMLElement && (t.isContentEditable || t.closest("input, textarea, select, [role=dialog]")))
+        return;
+      e.preventDefault();
+      inputRef.current?.focus();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
   const clearAll = () => {
     setQuery("");
     setKind("all");
@@ -118,10 +142,10 @@ export default function Library({ wsId, wsDoc, tree }: LibraryProps) {
         <h3 id="lib-heading" className="ws-section-title">
           Everything in this trip
         </h3>
-        <p className="lib-status" role="status">
+        <p className="lib-status lib-count" role="status">
           {pending > 0
             ? `Reading boards… ${folderIds.length - pending} of ${folderIds.length}`
-            : `${search.size} items`}
+            : `${search.size} ${search.size === 1 ? "item" : "items"}`}
           {failed > 0 ? ` · ${failed} board(s) couldn't be read` : ""}
         </p>
       </div>
@@ -134,7 +158,11 @@ export default function Library({ wsId, wsDoc, tree }: LibraryProps) {
           setShown(PAGE);
         }}
       >
-        <Input className="lib-search-input" placeholder="Search titles, tags, notes, places…" />
+        <svg className="lib-search-icon" viewBox="0 0 20 20" width="18" height="18" aria-hidden="true">
+          <circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" strokeWidth="2" />
+          <path d="M13 13l4.5 4.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+        <Input ref={inputRef} className="lib-search-input" placeholder="Search titles, tags, notes, places…  ( / )" />
         <Button className="lib-search-clear" aria-label="Clear search">
           ×
         </Button>
@@ -157,6 +185,7 @@ export default function Library({ wsId, wsDoc, tree }: LibraryProps) {
           {KINDS.map((k) => (
             <ToggleButton key={k.id} id={k.id} className="lib-kind">
               {k.label}
+              <span className="lib-kind-count">{kindCounts[k.id]}</span>
             </ToggleButton>
           ))}
         </ToggleButtonGroup>
@@ -170,9 +199,21 @@ export default function Library({ wsId, wsDoc, tree }: LibraryProps) {
               setShown(PAGE);
             }}
           >
-            <Button className="lib-select-button">
+            <Button className={activeTag ? "lib-select-button is-active" : "lib-select-button"}>
+              <span className="lib-select-icon" aria-hidden="true">
+                🏷️
+              </span>
               <SelectValue />
-              <span aria-hidden="true">▾</span>
+              <svg className="lib-chevron" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true">
+                <path
+                  d="M3 4.5l3 3 3-3"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </Button>
             <Popover className="react-aria-Popover lib-popover">
               <ListBox className="react-aria-ListBox lib-listbox">
@@ -199,17 +240,29 @@ export default function Library({ wsId, wsDoc, tree }: LibraryProps) {
               setShown(PAGE);
             }}
           >
-            <Button className="lib-select-button">
+            <Button className={activeFolder ? "lib-select-button is-active" : "lib-select-button"}>
+              <span className="lib-select-icon" aria-hidden="true">
+                📁
+              </span>
               <SelectValue />
-              <span aria-hidden="true">▾</span>
+              <svg className="lib-chevron" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true">
+                <path
+                  d="M3 4.5l3 3 3-3"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </Button>
             <Popover className="react-aria-Popover lib-popover">
-              <ListBox className="lib-listbox">
-                <ListBoxItem id="__all" className="lib-option">
+              <ListBox className="react-aria-ListBox lib-listbox">
+                <ListBoxItem id="__all" className="react-aria-ListBoxItem lib-option">
                   All folders
                 </ListBoxItem>
                 {folderOptions.map((f) => (
-                  <ListBoxItem key={f.id} id={f.id} textValue={f.title} className="lib-option">
+                  <ListBoxItem key={f.id} id={f.id} textValue={f.title} className="react-aria-ListBoxItem lib-option">
                     <span style={{ paddingInlineStart: `${f.depth * 0.9}rem` }}>{f.title}</span>
                   </ListBoxItem>
                 ))}
@@ -267,7 +320,9 @@ export default function Library({ wsId, wsDoc, tree }: LibraryProps) {
                         "▶"
                       ) : r.kind === "link" ? (
                         "🔗"
-                      ) : null}
+                      ) : (
+                        <span className="lib-thumb-note-text">{r.text}</span>
+                      )}
                     </span>
                     <span className="lib-body">
                       <span className="lib-title">{r.title}</span>

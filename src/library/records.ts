@@ -37,6 +37,24 @@ export interface LibraryRecord {
 type Raw = Record<string, unknown>;
 const isRaw = (v: unknown): v is Raw => typeof v === "object" && v !== null && !Array.isArray(v);
 
+/** "https://www.lonelyplanet.com/india/spiti-valley?x=1" → "Spiti valley · lonelyplanet.com" (a readable name for an untitled link). */
+export function linkName(url: string, hostname: string): string {
+  const host = hostname.replace(/^www\./, "");
+  let last: string;
+  try {
+    const segments = new URL(url).pathname.split("/").filter(Boolean);
+    last = decodeURIComponent(segments[segments.length - 1] ?? "");
+  } catch {
+    last = "";
+  }
+  const words = last
+    .replace(/\.(html?|php|aspx?)$/i, "")
+    .replace(/[-_+]+/g, " ")
+    .trim();
+  if (!words || /^\d+$/.test(words) || words.length > 80) return host;
+  return `${words.charAt(0).toUpperCase()}${words.slice(1)} · ${host}`;
+}
+
 /** Every video/link card and every sticky note (with its text) on one board. Deleted and malformed elements are skipped. */
 export function boardRecords(folderId: string, elements: readonly unknown[]): LibraryRecord[] {
   const live = new Map<string, Raw>();
@@ -66,9 +84,15 @@ export function boardRecords(folderId: string, elements: readonly unknown[]): Li
       const parsed = typeof el.link === "string" ? parseCardUrl(el.link) : null;
       if (!data || !parsed) continue;
       const video = parsed.kind === "video" && data.kind !== "link" ? parsed.value : null; // same rule as CardView
-      const fallback = video ? (video.provider === "youtube" ? "YouTube video" : "Vimeo video") : parsed.value.url;
+      const fallback = video
+        ? video.provider === "youtube"
+          ? "YouTube video"
+          : "Vimeo video"
+        : linkName(parsed.value.url, parsed.value.hostname);
       const thumbnail = video
-        ? ((video.provider === "youtube" ? youtubeThumbnail(video.videoId) : data.thumbnail) ?? undefined)
+        ? ((video.provider === "youtube"
+            ? youtubeThumbnail(video.videoId)?.replace("/hqdefault.jpg", "/mqdefault.jpg")
+            : data.thumbnail) ?? undefined)
         : undefined;
       out.push({
         ...base,
