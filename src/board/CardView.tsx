@@ -5,7 +5,7 @@ import { useEffect, useState, useSyncExternalStore, type RefObject } from "react
 import { cardData, metaFetched, setCardMeta } from "./cards";
 import { useBoardTags } from "./tagsContext";
 import { parseCardUrl, youtubeThumbnail } from "./urls";
-import { fetchVimeoMeta } from "./videoMeta";
+import { fetchVideoMeta } from "./videoMeta";
 
 function subscribeOnline(cb: () => void) {
   window.addEventListener("online", cb);
@@ -39,17 +39,20 @@ export function CardView({
   const parsed = parseCardUrl(element.link ?? "");
   const data = cardData(element);
 
-  const vimeoId = parsed?.kind === "video" && parsed.value.provider === "vimeo" ? parsed.value.videoId : null;
-  const needsMeta = vimeoId !== null && !metaFetched(element);
+  const videoUrl = parsed?.kind === "video" ? parsed.value.url : null;
+  const needsMeta = videoUrl !== null && !metaFetched(element);
   useEffect(() => {
-    if (!vimeoId || !needsMeta || !navigator.onLine) return;
+    if (!videoUrl || !needsMeta || !navigator.onLine) return;
     const ctrl = new AbortController();
-    void fetchVimeoMeta(vimeoId, ctrl.signal).then((meta) => {
-      if (meta && apiRef.current)
-        setCardMeta(apiRef.current, element.id, { thumbnail: meta.thumbnail, autoTitle: meta.title });
+    void fetchVideoMeta(videoUrl, ctrl.signal).then((result) => {
+      const api = apiRef.current;
+      if (!api || ctrl.signal.aborted) return;
+      if (result.kind === "found")
+        setCardMeta(api, element.id, { thumbnail: result.meta.thumbnail, autoTitle: result.meta.title });
+      else if (result.kind === "missing") setCardMeta(api, element.id, {});
     });
     return () => ctrl.abort();
-  }, [vimeoId, needsMeta, element.id, apiRef]);
+  }, [videoUrl, needsMeta, element.id, apiRef]);
 
   if (parsed === null) {
     return <div className="board-card board-card-blocked">This link can't be shown.</div>;

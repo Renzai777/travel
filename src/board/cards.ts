@@ -134,10 +134,13 @@ export function setCardMeta(
   id: string,
   meta: { thumbnail?: string; autoTitle?: string },
 ): void {
+  const patch: { thumbnail?: string; autoTitle?: string } = {};
+  if (meta.thumbnail) patch.thumbnail = meta.thumbnail;
+  if (meta.autoTitle) patch.autoTitle = meta.autoTitle;
   api.updateScene({
     elements: api.getSceneElementsIncludingDeleted().map((el) => {
       const data = el.id === id ? cardData(el) : null;
-      return data ? newElementWith(el, { customData: { ...el.customData, ...meta, metaFetched: true } }) : el;
+      return data ? newElementWith(el, { customData: { ...el.customData, ...patch, metaFetched: true } }) : el;
     }),
     captureUpdate: CaptureUpdateAction.NEVER, // not an undo step
   });
