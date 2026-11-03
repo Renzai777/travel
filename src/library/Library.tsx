@@ -130,6 +130,14 @@ export default function Library({ wsId, wsDoc, tree }: LibraryProps) {
     setShown(PAGE);
   };
 
+  const filtersOn = kind !== "all" || activeTag !== null || activeFolder !== null;
+  const clearFilters = () => {
+    setKind("all");
+    setTagId(null);
+    setFolderId(null);
+    setShown(PAGE);
+  };
+
   const go = (e: MouseEvent<HTMLAnchorElement>, href: string) => {
     if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     e.preventDefault();
@@ -190,85 +198,122 @@ export default function Library({ wsId, wsDoc, tree }: LibraryProps) {
           ))}
         </ToggleButtonGroup>
         {tags.length > 0 && (
-          <Select
-            className="lib-select"
-            aria-label="Tag"
-            value={activeTag ?? "__any"}
-            onChange={(k) => {
-              setTagId(k === "__any" || k == null ? null : String(k));
-              setShown(PAGE);
-            }}
-          >
-            <Button className={activeTag ? "lib-select-button is-active" : "lib-select-button"}>
-              <span className="lib-select-icon" aria-hidden="true">
-                🏷️
-              </span>
-              <SelectValue />
-              <svg className="lib-chevron" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true">
-                <path
-                  d="M3 4.5l3 3 3-3"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.6"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </Button>
-            <Popover className="react-aria-Popover lib-popover">
-              <ListBox className="react-aria-ListBox lib-listbox">
-                <ListBoxItem id="__any" className="react-aria-ListBoxItem lib-option">
-                  Any tag
-                </ListBoxItem>
-                {tags.map((t) => (
-                  <ListBoxItem key={t.id} id={t.id} textValue={t.name} className="react-aria-ListBoxItem lib-option">
-                    <span className="lib-swatch" style={{ background: t.color }} aria-hidden="true" />
-                    {t.name}
+          <span className="lib-filter">
+            <Select
+              className="lib-select"
+              aria-label="Tag"
+              value={activeTag ?? "__any"}
+              onChange={(k) => {
+                setTagId(k === "__any" || k == null ? null : String(k));
+                setShown(PAGE);
+              }}
+            >
+              <Button className={activeTag ? "lib-select-button is-active has-clear" : "lib-select-button"}>
+                <span className="lib-select-icon" aria-hidden="true">
+                  🏷️
+                </span>
+                <SelectValue />
+                <svg className="lib-chevron" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true">
+                  <path
+                    d="M3 4.5l3 3 3-3"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </Button>
+              <Popover className="react-aria-Popover lib-popover">
+                <ListBox className="react-aria-ListBox lib-listbox">
+                  <ListBoxItem id="__any" className="react-aria-ListBoxItem lib-option">
+                    Any tag
                   </ListBoxItem>
-                ))}
-              </ListBox>
-            </Popover>
-          </Select>
+                  {tags.map((t) => (
+                    <ListBoxItem key={t.id} id={t.id} textValue={t.name} className="react-aria-ListBoxItem lib-option">
+                      <span className="lib-swatch" style={{ background: t.color }} aria-hidden="true" />
+                      {t.name}
+                    </ListBoxItem>
+                  ))}
+                </ListBox>
+              </Popover>
+            </Select>
+            {activeTag && (
+              <button
+                type="button"
+                className="lib-filter-clear"
+                aria-label={`Remove tag filter ${tagById.get(activeTag)?.name ?? ""}`}
+                title="Remove this filter"
+                onClick={() => {
+                  setTagId(null);
+                  setShown(PAGE);
+                }}
+              >
+                ×
+              </button>
+            )}
+          </span>
         )}
         {folderOptions.length > 0 && (
-          <Select
-            className="lib-select"
-            aria-label="Folder"
-            value={activeFolder ?? "__all"}
-            onChange={(k) => {
-              setFolderId(k === "__all" || k == null ? null : String(k));
-              setShown(PAGE);
-            }}
-          >
-            <Button className={activeFolder ? "lib-select-button is-active" : "lib-select-button"}>
-              <span className="lib-select-icon" aria-hidden="true">
-                📁
-              </span>
-              <SelectValue />
-              <svg className="lib-chevron" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true">
-                <path
-                  d="M3 4.5l3 3 3-3"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.6"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </Button>
-            <Popover className="react-aria-Popover lib-popover">
-              <ListBox className="react-aria-ListBox lib-listbox">
-                <ListBoxItem id="__all" className="react-aria-ListBoxItem lib-option">
-                  All folders
-                </ListBoxItem>
-                {folderOptions.map((f) => (
-                  <ListBoxItem key={f.id} id={f.id} textValue={f.title} className="react-aria-ListBoxItem lib-option">
-                    <span style={{ paddingInlineStart: `${f.depth * 0.9}rem` }}>{f.title}</span>
+          <span className="lib-filter">
+            <Select
+              className="lib-select"
+              aria-label="Folder"
+              value={activeFolder ?? "__all"}
+              onChange={(k) => {
+                setFolderId(k === "__all" || k == null ? null : String(k));
+                setShown(PAGE);
+              }}
+            >
+              <Button className={activeFolder ? "lib-select-button is-active has-clear" : "lib-select-button"}>
+                <span className="lib-select-icon" aria-hidden="true">
+                  📁
+                </span>
+                <SelectValue />
+                <svg className="lib-chevron" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true">
+                  <path
+                    d="M3 4.5l3 3 3-3"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </Button>
+              <Popover className="react-aria-Popover lib-popover">
+                <ListBox className="react-aria-ListBox lib-listbox">
+                  <ListBoxItem id="__all" className="react-aria-ListBoxItem lib-option">
+                    All folders
                   </ListBoxItem>
-                ))}
-              </ListBox>
-            </Popover>
-          </Select>
+                  {folderOptions.map((f) => (
+                    <ListBoxItem key={f.id} id={f.id} textValue={f.title} className="react-aria-ListBoxItem lib-option">
+                      <span style={{ paddingInlineStart: `${f.depth * 0.9}rem` }}>{f.title}</span>
+                    </ListBoxItem>
+                  ))}
+                </ListBox>
+              </Popover>
+            </Select>
+            {activeFolder && (
+              <button
+                type="button"
+                className="lib-filter-clear"
+                aria-label={`Remove folder filter ${tree.byId.get(activeFolder)?.title ?? ""}`}
+                title="Remove this filter"
+                onClick={() => {
+                  setFolderId(null);
+                  setShown(PAGE);
+                }}
+              >
+                ×
+              </button>
+            )}
+          </span>
+        )}
+        {filtersOn && (
+          <button type="button" className="lib-clear-filters" onClick={clearFilters}>
+            Clear filters
+          </button>
         )}
       </div>
 
