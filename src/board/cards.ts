@@ -1,11 +1,13 @@
 import { CaptureUpdateAction, convertToExcalidrawElements, newElementWith } from "@excalidraw/excalidraw";
 import type { ExcalidrawElement } from "@excalidraw/excalidraw/element/types";
 import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
-import { cleanNotes, cleanTagIds, cleanTitle } from "./cardDetails";
+import { cardData, cleanNotes, cleanTagIds, cleanTitle, type CardData } from "./cardDetails";
 import { NOTE_COLORS } from "./notes";
 import { freeSpot, NOTE_HEIGHT, NOTE_WIDTH } from "./notePlacement";
 import { liveCount } from "./sceneSync";
-import { safeThumbnail, type CardUrl } from "./urls";
+import type { CardUrl } from "./urls";
+
+export { cardData, type CardData } from "./cardDetails";
 
 export const VIDEO_WIDTH = 384;
 export const VIDEO_HEIGHT = 260; // 16:9 player + a title bar
@@ -13,35 +15,6 @@ export const LINK_WIDTH = 300;
 export const LINK_HEIGHT = 128;
 const GAP = 24;
 const WIDE_NOTE_WIDTH = 360;
-
-export interface CardData {
-  kind: "video" | "link";
-  title: string;
-  thumbnail?: string;
-  autoTitle?: string;
-  tags: string[];
-  notes: string;
-}
-
-/** Card data stored in `customData`. Treated as untrusted: the URL always comes from `element.link`, re-checked on render. */
-export function cardData(element: Pick<ExcalidrawElement, "customData">): CardData | null {
-  const d = element.customData as Partial<CardData> | undefined;
-  if (!d || (d.kind !== "video" && d.kind !== "link")) return null;
-  const data: CardData = {
-    kind: d.kind,
-    title: typeof d.title === "string" ? d.title.slice(0, 300) : "",
-    tags: cleanTagIds(d.tags),
-    notes: cleanNotes(d.notes),
-  };
-  if (typeof d.thumbnail === "string") {
-    const thumb = safeThumbnail(d.thumbnail);
-    if (thumb) data.thumbnail = thumb;
-  }
-  if (typeof d.autoTitle === "string") {
-    data.autoTitle = d.autoTitle.slice(0, 300);
-  }
-  return data;
-}
 
 function cardSkeleton(card: CardUrl, x: number, y: number) {
   const video = card.kind === "video";

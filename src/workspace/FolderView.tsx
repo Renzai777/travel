@@ -5,6 +5,7 @@ import { pathTo, type FolderTree } from "./tree";
 import { folderPath } from "./wsRoutes";
 
 const Board = lazy(() => import("../board/Board"));
+const Library = lazy(() => import("../library/Library"));
 
 export interface FolderViewProps {
   wsId: string;
@@ -28,10 +29,6 @@ export function FolderView({ wsId, tree, folderId, wsDoc }: FolderViewProps) {
   if (folderId === null) {
     return (
       <div className="ws-folder-view">
-        <nav aria-label="Breadcrumb" className="ws-breadcrumb">
-          <span aria-current="page">All files</span>
-        </nav>
-
         <div className="ws-folder-view-header">
           <div className="ws-folder-view-title-area">
             <h2 className="ws-folder-heading">{headingTitle}</h2>
@@ -40,7 +37,8 @@ export function FolderView({ wsId, tree, folderId, wsDoc }: FolderViewProps) {
 
         {children.length === 0 ? (
           <p className="ws-empty">
-            No folders yet. Use + in the sidebar to create one — every folder is its own canvas board.
+            No folders yet. Use + in the sidebar to create one — every folder is its own canvas board, and everything
+            you put on the boards is listed and searchable here.
           </p>
         ) : (
           <div className="ws-folder-grid">
@@ -57,13 +55,26 @@ export function FolderView({ wsId, tree, folderId, wsDoc }: FolderViewProps) {
                 <div className="ws-folder-card-body">
                   <span className="ws-folder-card-title">{child.title}</span>
                   <span className="ws-folder-card-count">
-                    {child.children.length === 1 ? "1 folder" : `${child.children.length} folders`}
+                    {child.children.length === 0
+                      ? "Board"
+                      : child.children.length === 1
+                        ? "Board · 1 subfolder"
+                        : `Board · ${child.children.length} subfolders`}
                   </span>
                 </div>
               </a>
             ))}
           </div>
         )}
+        <Suspense
+          fallback={
+            <p className="ws-loading" role="status">
+              Loading the library…
+            </p>
+          }
+        >
+          <Library key={wsId} wsId={wsId} wsDoc={wsDoc} tree={tree} />
+        </Suspense>
       </div>
     );
   }

@@ -1,5 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { CARD_NOTES_MAX, CARD_TAGS_MAX, CARD_TITLE_MAX, cleanNotes, cleanTagIds, cleanTitle } from "./cardDetails";
+import {
+  CARD_NOTES_MAX,
+  CARD_TAGS_MAX,
+  CARD_TITLE_MAX,
+  cardData,
+  cleanNotes,
+  cleanTagIds,
+  cleanTitle,
+} from "./cardDetails";
 
 describe("cardDetails", () => {
   it("cleanTagIds deduplicates and preserves valid ids", () => {
@@ -51,5 +59,31 @@ describe("cardDetails", () => {
     const cleaned = cleanTitle(longTitle);
     expect(cleaned).toHaveLength(CARD_TITLE_MAX);
     expect(cleaned).toHaveLength(300);
+  });
+
+  it("cardData parses valid card and returns defaults for missing fields", () => {
+    expect(cardData({ customData: { kind: "video", title: "x" } })).toEqual({
+      kind: "video",
+      title: "x",
+      tags: [],
+      notes: "",
+    });
+  });
+
+  it("cardData returns null for invalid kind or missing customData", () => {
+    expect(cardData({ customData: { kind: "nope" } })).toBeNull();
+    expect(cardData({})).toBeNull();
+  });
+
+  it("cardData drops untrusted thumbnails and keeps safe ones", () => {
+    const evil = cardData({
+      customData: { kind: "video", title: "x", thumbnail: "https://evil.example/a.jpg" },
+    });
+    expect(evil?.thumbnail).toBeUndefined();
+
+    const good = cardData({
+      customData: { kind: "video", title: "x", thumbnail: "https://i.vimeocdn.com/video/1.jpg" },
+    });
+    expect(good?.thumbnail).toBe("https://i.vimeocdn.com/video/1.jpg");
   });
 });
