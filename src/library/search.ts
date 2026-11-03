@@ -22,6 +22,7 @@ type SearchDoc = {
   text: string;
   host: string;
   folder: string;
+  section: string;
 };
 
 const recentFirst = (a: LibraryRecord, b: LibraryRecord) => b.updated - a.updated || a.id.localeCompare(b.id);
@@ -33,10 +34,10 @@ export function createLibrarySearch(records: readonly LibraryRecord[], names: Li
   const all = [...byId.values()];
 
   const index = new MiniSearch<SearchDoc>({
-    fields: ["title", "autoTitle", "tags", "notes", "text", "host", "folder"],
+    fields: ["title", "autoTitle", "tags", "notes", "text", "host", "folder", "section"],
     storeFields: [],
     searchOptions: {
-      boost: { title: 3, autoTitle: 2, tags: 2, folder: 1.5 },
+      boost: { title: 3, autoTitle: 2, tags: 2, folder: 1.5, section: 1.5 },
       prefix: true,
       fuzzy: (term) => (term.length > 3 ? 0.2 : false),
       combineWith: "AND",
@@ -52,6 +53,7 @@ export function createLibrarySearch(records: readonly LibraryRecord[], names: Li
       text: r.text,
       host: r.host,
       folder: names.folder.get(r.folderId) ?? "",
+      section: r.section,
     })),
   );
 

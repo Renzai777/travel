@@ -187,6 +187,83 @@ describe("records", () => {
     expect(boardRecords("f1", elements)).toEqual([]);
   });
 
+  it("resolves section name from a live frame for cards", () => {
+    const elements = [
+      { id: "frame1", type: "frame", name: "Day 3 – Spiti", x: 0, y: 0 },
+      {
+        id: "c1",
+        type: "embeddable",
+        frameId: "frame1",
+        link: "https://example.com/spiti",
+        customData: { kind: "link", title: "Guide" },
+      },
+    ];
+    const recs = boardRecords("f1", elements);
+    expect(recs).toHaveLength(1);
+    expect(recs[0].section).toBe("Day 3 – Spiti");
+  });
+
+  it("sets section to empty string when frameId points to a deleted frame or unknown id", () => {
+    const elements = [
+      { id: "frame-del", type: "frame", name: "Old Frame", isDeleted: true, x: 0, y: 0 },
+      {
+        id: "c1",
+        type: "embeddable",
+        frameId: "frame-del",
+        link: "https://example.com/1",
+        customData: { kind: "link", title: "C1" },
+      },
+      {
+        id: "c2",
+        type: "embeddable",
+        frameId: "nonexistent",
+        link: "https://example.com/2",
+        customData: { kind: "link", title: "C2" },
+      },
+      {
+        id: "c3",
+        type: "embeddable",
+        link: "https://example.com/3",
+        customData: { kind: "link", title: "C3" },
+      },
+    ];
+    const recs = boardRecords("f1", elements);
+    expect(recs).toHaveLength(3);
+    expect(recs[0].section).toBe("");
+    expect(recs[1].section).toBe("");
+    expect(recs[2].section).toBe("");
+  });
+
+  it("sets section for a sticky note in a frame", () => {
+    const elements = [
+      { id: "frame1", type: "frame", name: "Day 3 – Spiti", x: 0, y: 0 },
+      {
+        id: "note1",
+        type: "rectangle",
+        frameId: "frame1",
+        customData: { kind: "note" },
+      },
+      {
+        id: "text1",
+        type: "text",
+        containerId: "note1",
+        text: "Pack extra fuel",
+      },
+    ];
+    const recs = boardRecords("f1", elements);
+    expect(recs).toHaveLength(1);
+    expect(recs[0].kind).toBe("note");
+    expect(recs[0].section).toBe("Day 3 – Spiti");
+  });
+
+  it("frames don't appear as records", () => {
+    const elements = [
+      { id: "frame1", type: "frame", name: "Day 3 – Spiti", x: 0, y: 0 },
+      { id: "frame2", type: "frame", name: "Untitled section", x: 100, y: 0 },
+    ];
+    expect(boardRecords("f1", elements)).toEqual([]);
+  });
+
   describe("snippetOf", () => {
     it("returns note text after the title line", () => {
       const noteRec: LibraryRecord = {
@@ -201,6 +278,7 @@ describe("records", () => {
         host: "",
         url: "",
         tagIds: [],
+        section: "",
         updated: 0,
       };
       expect(snippetOf(noteRec)).toBe("B C");
@@ -220,6 +298,7 @@ describe("records", () => {
         host: "example.com",
         url: "https://example.com",
         tagIds: [],
+        section: "",
         updated: 0,
       };
       const snippet = snippetOf(cardRec);

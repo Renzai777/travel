@@ -373,6 +373,7 @@ export default function Library({ wsId, wsDoc, tree }: LibraryProps) {
                       <span className="lib-title">{r.title}</span>
                       <span className="lib-meta">
                         {kindLabel} · <span aria-hidden="true">📁</span> {folderLabel.get(r.folderId) ?? "Folder"}
+                        {r.section ? ` › ${r.section}` : ""}
                       </span>
                       {snippet && <span className="lib-snippet">{snippet}</span>}
                       {knownTags.length > 0 && (

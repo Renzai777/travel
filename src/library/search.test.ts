@@ -15,6 +15,7 @@ function rec(p: Partial<LibraryRecord> & { id: string }): LibraryRecord {
     host: "",
     url: "",
     tagIds: [],
+    section: "",
     updated: 0,
     ...p,
   };
@@ -177,5 +178,19 @@ describe("search", () => {
     const search = createLibrarySearch(records, names);
     expect(() => search.search("!!", noFilters)).not.toThrow();
     expect(search.search("!!", noFilters)).toEqual([]);
+  });
+
+  it("a record with section Day 3 – Spiti is found by spiti when title does not contain it", () => {
+    const sectionRecord = rec({
+      id: "sec1",
+      folderId: "f2",
+      title: "Mountain Pass Guide",
+      section: "Day 3 – Spiti",
+      tagIds: [],
+    });
+    const search = createLibrarySearch([sectionRecord], names);
+    const results = search.search("spiti", noFilters);
+    expect(results).toHaveLength(1);
+    expect(results[0].id).toBe("sec1");
   });
 });

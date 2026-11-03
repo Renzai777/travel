@@ -22,6 +22,9 @@ import { CardView } from "./CardView";
 import { addNote, NOTE_COLORS, type NoteColorId } from "./notes";
 import { isExcalidrawClipboard, routePaste } from "./pasteRoute";
 import { LOCAL_ORIGIN, elementsMap, liveCount, readElements, writeElements } from "./sceneSync";
+import { addSection, jumpToSection, renameSection } from "./sectionActions";
+import { listSections, sectionsKey, type Section } from "./sections";
+import { SectionsMenu } from "./SectionsMenu";
 import { TagsContext } from "./tagsContext";
 import { parseCardUrl, parseSafeUrl } from "./urls";
 import { useSiteTheme } from "./useSiteTheme";
@@ -100,6 +103,9 @@ function BoardCanvas({ doc, title, wsDoc }: { doc: Y.Doc; title: string; wsDoc: 
     if (focusRequest) history.replaceState(history.state, "", window.location.pathname + window.location.hash);
   }, [focusRequest]);
   const [count, setCount] = useState(() => liveCount(initialElements));
+  const [sections, setSections] = useState<Section[]>(() => listSections(initialElements));
+  const sectionsKeyRef = useRef(sectionsKey(sections));
+  const [selectedCount, setSelectedCount] = useState(0);
   const limitToastShown = useRef(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const [noteColor, setNoteColor] = useState<NoteColorId>("yellow");
@@ -227,6 +233,19 @@ function BoardCanvas({ doc, title, wsDoc }: { doc: Y.Doc; title: string; wsDoc: 
       selectedRef.current = nextCard;
       setSelectedCard(nextCard);
     }
+
+    const nextSections = listSections(elements);
+    const key = sectionsKey(nextSections);
+    if (key !== sectionsKeyRef.current) {
+      sectionsKeyRef.current = key;
+      setSections(nextSections);
+    }
+    let selCount = 0;
+    if (selIds.length > 0) {
+      const sel = new Set(selIds);
+      for (const el of elements) if (sel.has(el.id) && !el.isDeleted && el.type !== "frame") selCount++;
+    }
+    if (selCount !== selectedCount) setSelectedCount(selCount);
 
     if (timer.current === null) timer.current = window.setTimeout(flush, WRITE_DELAY_MS);
   };
@@ -431,6 +450,20 @@ function BoardCanvas({ doc, title, wsDoc }: { doc: Y.Doc; title: string; wsDoc: 
           </Dialog>
         </Popover>
       </DialogTrigger>
+      <SectionsMenu
+        sections={sections}
+        selectedCount={selectedCount}
+        disabled={full}
+        onAdd={(name) => {
+          const api = apiRef.current;
+          if (!api) return false;
+          const ok = addSection(api, name, LIMIT);
+          if (ok) setToolPicked(true);
+          return ok;
+        }}
+        onJump={(id) => apiRef.current && jumpToSection(apiRef.current, id)}
+        onRename={(id, name) => apiRef.current && renameSection(apiRef.current, id, name)}
+      />
       {!isMobile && (
         <button
           type="button"
