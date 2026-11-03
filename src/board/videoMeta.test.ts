@@ -1,12 +1,12 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { fetchVimeoMeta, parseVimeoOembed } from "./videoMeta";
+import { fetchVideoMeta, parseApiMeta } from "./videoMeta";
 
-describe("parseVimeoOembed", () => {
-  it("parses valid title and thumbnail", () => {
+describe("parseApiMeta", () => {
+  it("parses valid title and Vimeo-host thumbnail", () => {
     expect(
-      parseVimeoOembed({
+      parseApiMeta({
         title: " Hi ",
-        thumbnail_url: "https://i.vimeocdn.com/video/1_640",
+        thumbnail: "https://i.vimeocdn.com/video/1_640",
       }),
     ).toEqual({
       title: "Hi",
@@ -14,11 +14,32 @@ describe("parseVimeoOembed", () => {
     });
   });
 
-  it("omits invalid thumbnails", () => {
+  it("cuts titles over 300 characters to 300", () => {
+    const longTitle = "a".repeat(500);
+    const parsed = parseApiMeta({ title: ` ${longTitle} ` });
+    expect(parsed.title).toBe("a".repeat(300));
+    expect(parsed.title?.length).toBe(300);
+  });
+
+  it("omits non-string or whitespace-only title", () => {
+    expect(parseApiMeta({ title: 123 })).toEqual({});
+    expect(parseApiMeta({ title: "   " })).toEqual({});
+  });
+
+  it("keeps Vimeo-host thumbnail and drops other hosts and http", () => {
     expect(
-      parseVimeoOembed({
+      parseApiMeta({
         title: "x",
-        thumbnail_url: "https://evil.example/a.jpg",
+        thumbnail: "https://evil.example/a.jpg",
+      }),
+    ).toEqual({
+      title: "x",
+    });
+
+    expect(
+      parseApiMeta({
+        title: "x",
+        thumbnail: "http://i.vimeocdn.com/video/1_640",
       }),
     ).toEqual({
       title: "x",
@@ -26,55 +47,52 @@ describe("parseVimeoOembed", () => {
   });
 
   it("handles null, strings, and empty objects", () => {
-    expect(parseVimeoOembed(null)).toEqual({});
-    expect(parseVimeoOembed("str")).toEqual({});
-    expect(parseVimeoOembed({})).toEqual({});
-  });
-
-  it("cuts titles over 300 characters to 300", () => {
-    const longTitle = "a".repeat(500);
-    const parsed = parseVimeoOembed({ title: longTitle });
-    expect(parsed.title).toBe("a".repeat(300));
-    expect(parsed.title?.length).toBe(300);
+    expect(parseApiMeta(null)).toEqual({});
+    expect(parseApiMeta("str")).toEqual({});
+    expect(parseApiMeta({})).toEqual({});
   });
 });
 
-describe("fetchVimeoMeta", () => {
+describe("fetchVideoMeta", () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
 
-  it("returns null immediately for invalid video ids", async () => {
-    const fetchSpy = vi.spyOn(globalThis, "fetch");
-    expect(await fetchVimeoMeta("bad")).toBeNull();
-    expect(await fetchVimeoMeta("1234")).toBeNull();
-    expect(await fetchVimeoMeta("1234567890123")).toBeNull();
-    expect(fetchSpy).not.toHaveBeenCalled();
-  });
-
-  it("fetches oEmbed data for valid video ids", async () => {
-    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({
-        title: "Sample Video",
-        thumbnail_url: "https://i.vimeocdn.com/video/123_640",
+  it("returns found on 200 with JSON response", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+      new Response(JSON.stringify({ title: "My Video", thumbnail: "https://i.vimeocdn.com/video/1_640" }), {
+        status: 200,
+        headers: { "content-type": "application/json" },
       }),
-    } as Response);
-
-    const meta = await fetchVimeoMeta("76979871");
-    expect(meta).toEqual({
-      title: "Sample Video",
-      thumbnail: "https://i.vimeocdn.com/video/123_640",
+    );
+    const res = await fetchVideoMeta("https://vimeo.com/12345");
+    expect(res).toEqual({
+      kind: "found",
+      meta: { title: "My Video", thumbnail: "https://i.vimeocdn.com/video/1_640" },
     });
   });
 
-  it("returns null if fetch fails or response is not ok", async () => {
-    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce({
-      ok: false,
-    } as Response);
-    expect(await fetchVimeoMeta("76979871")).toBeNull();
+  it("returns missing on 404 or 400", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(new Response(null, { status: 404 }));
+    expect(await fetchVideoMeta("https://vimeo.com/12345")).toEqual({ kind: "missing" });
 
-    vi.spyOn(globalThis, "fetch").mockRejectedValueOnce(new Error("network error"));
-    expect(await fetchVimeoMeta("76979871")).toBeNull();
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(new Response(null, { status: 400 }));
+    expect(await fetchVideoMeta("https://vimeo.com/12345")).toEqual({ kind: "missing" });
+  });
+
+  it("returns retry on 500, non-json response, or fetch failure", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(new Response("error", { status: 500 }));
+    expect(await fetchVideoMeta("https://vimeo.com/12345")).toEqual({ kind: "retry" });
+
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+      new Response("<html>ok</html>", {
+        status: 200,
+        headers: { "content-type": "text/html" },
+      }),
+    );
+    expect(await fetchVideoMeta("https://vimeo.com/12345")).toEqual({ kind: "retry" });
+
+    vi.spyOn(globalThis, "fetch").mockRejectedValueOnce(new Error("network"));
+    expect(await fetchVideoMeta("https://vimeo.com/12345")).toEqual({ kind: "retry" });
   });
 });

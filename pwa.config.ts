@@ -72,6 +72,8 @@ export const pwaOptions: Partial<VitePWAOptions> = {
     // Photos are excluded from precache on purpose (28 MB); they are cached at runtime below, or all at once via "Save photos for offline".
     globIgnores: ["**/assets/img/**"],
     navigateFallback: "/index.html",
+    // API responses are never replaced by the app shell.
+    navigateFallbackDenylist: [/^\/api\//],
     cleanupOutdatedCaches: true,
     runtimeCaching: [
       {
