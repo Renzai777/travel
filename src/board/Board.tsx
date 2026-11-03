@@ -5,13 +5,17 @@ import type { OrderedExcalidrawElement } from "@excalidraw/excalidraw/element/ty
 import type { RemoteExcalidrawElement } from "@excalidraw/excalidraw/data/reconcile";
 import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Button, Menu, MenuItem, MenuTrigger, Popover } from "react-aria-components";
+import { Button, Dialog, DialogTrigger, Menu, MenuItem, MenuTrigger, Popover } from "react-aria-components";
 import * as Y from "yjs";
 import { setFocusMode, toggleFocusMode, useBoardLayout } from "../workspace/boardLayout";
 import { boardDocName } from "../workspace/docNames";
 import { openDoc, type OpenDoc } from "../workspace/openDoc";
+import { addPasted } from "./cards";
+import { CardView } from "./CardView";
 import { addNote, NOTE_COLORS, type NoteColorId } from "./notes";
+import { isExcalidrawClipboard, routePaste } from "./pasteRoute";
 import { LOCAL_ORIGIN, elementsMap, liveCount, readElements, writeElements } from "./sceneSync";
+import { parseCardUrl, parseSafeUrl } from "./urls";
 import { useSiteTheme } from "./useSiteTheme";
 import "./board.css";
 
@@ -82,6 +86,28 @@ function BoardCanvas({ doc, title }: { doc: Y.Doc; title: string }) {
   const [toolPicked, setToolPicked] = useState(false);
   const { focus } = useBoardLayout();
   const full = count >= LIMIT;
+  const [linkError, setLinkError] = useState<string | null>(null);
+
+  const addLink = (raw: string): boolean => {
+    const api = apiRef.current;
+    const card = parseCardUrl(raw);
+    if (!api || !card) {
+      setLinkError("That doesn't look like a web link. It should start with https://");
+      return false;
+    }
+    setLinkError(null);
+    setToolPicked(true);
+    return addPasted(api, [card], undefined, LIMIT);
+  };
+
+  const pasteHelp = () => {
+    containerRef.current?.querySelector<HTMLElement>(".excalidraw")?.focus();
+    apiRef.current?.setToast({
+      message: "Copy a YouTube, Vimeo or web link, then press Ctrl+V (⌘V on a Mac) here.",
+      closable: true,
+      duration: 6000,
+    });
+  };
 
   const newNote = useCallback((color: NoteColorId) => {
     const api = apiRef.current;
@@ -218,6 +244,39 @@ function BoardCanvas({ doc, title }: { doc: Y.Doc; title: string }) {
     };
   }, [newNote]);
 
+  // Paste runs in the capture phase, before Excalidraw's handler (which ignores pastes unless the pointer is over the canvas).
+  // We take links, text and images; Excalidraw keeps its own copied shapes, and pastes into any text field are left alone.
+  useEffect(() => {
+    const onPasteEvent = (e: ClipboardEvent) => {
+      const api = apiRef.current;
+      if (!api || !e.clipboardData) return;
+      const target = e.target instanceof HTMLElement ? e.target : null;
+      const inBoard = !target || target === document.body || Boolean(containerRef.current?.contains(target));
+      if (!inBoard || (target && isTyping(target)) || api.getAppState().editingTextElement) return;
+
+      const text = e.clipboardData.getData("text/plain");
+      const hasImage = [...e.clipboardData.files].some((f) => f.type.startsWith("image/"));
+      const decision = routePaste({ text, hasElements: isExcalidrawClipboard(text), hasImage });
+      if (decision.kind === "delegate") return; // Excalidraw's normal paste
+
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      if (decision.kind === "image") {
+        api.setToast({ message: "Images arrive in a later update.", closable: true });
+        return;
+      }
+      const note =
+        decision.kind === "note"
+          ? { text: decision.text, wide: decision.wide }
+          : decision.note
+            ? { text: decision.note, wide: decision.note.length > 80 }
+            : undefined;
+      if (addPasted(api, decision.kind === "cards" ? decision.cards : [], note, LIMIT)) setToolPicked(true);
+    };
+    window.addEventListener("paste", onPasteEvent, true);
+    return () => window.removeEventListener("paste", onPasteEvent, true);
+  }, []);
+
   const renderTopRightUI = (isMobile: boolean) => (
     <div className="board-tools" role="toolbar" aria-label="Board">
       <button
@@ -226,13 +285,14 @@ function BoardCanvas({ doc, title }: { doc: Y.Doc; title: string }) {
         onClick={() => newNote(noteColor)}
         disabled={full}
         title={full ? "This board is full" : "Add a sticky note (N)"}
+        aria-label="Add a sticky note"
       >
         <span
           className="board-swatch"
           style={{ background: NOTE_COLORS.find((c) => c.id === noteColor)?.fill }}
           aria-hidden="true"
         />
-        Note
+        <span className="board-tool-label">Note</span>
       </button>
       <MenuTrigger>
         <Button className="board-tool board-tool-caret" aria-label="Note colour" isDisabled={full}>
@@ -240,14 +300,14 @@ function BoardCanvas({ doc, title }: { doc: Y.Doc; title: string }) {
         </Button>
         <Popover className="react-aria-Popover board-color-popover" placement="bottom end">
           <Menu
-            className="react-aria-Menu"
             aria-label="New note in colour"
+            className="react-aria-Menu"
             onAction={(key) => newNote(String(key) as NoteColorId)}
           >
             {NOTE_COLORS.map((c) => (
               <MenuItem
-                key={c.id}
                 id={c.id}
+                key={c.id}
                 className="react-aria-MenuItem board-color-item"
                 textValue={`${c.label} note`}
               >
@@ -259,6 +319,49 @@ function BoardCanvas({ doc, title }: { doc: Y.Doc; title: string }) {
           </Menu>
         </Popover>
       </MenuTrigger>
+      <DialogTrigger onOpenChange={(open) => !open && setLinkError(null)}>
+        <Button className="board-tool" isDisabled={full} aria-label="Add a video or link">
+          <span aria-hidden="true">🔗</span>
+          <span className="board-tool-label">Link</span>
+        </Button>
+        <Popover className="react-aria-Popover board-color-popover" placement="bottom end">
+          <Dialog className="board-link-dialog" aria-label="Add a video or link">
+            {({ close }) => (
+              <form
+                className="board-link-form"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const value = new FormData(e.currentTarget).get("url");
+                  if (typeof value === "string" && addLink(value)) close();
+                }}
+              >
+                <label htmlFor="board-link-input">YouTube, Vimeo or any web link</label>
+                <div className="board-link-row">
+                  <input
+                    id="board-link-input"
+                    name="url"
+                    type="url"
+                    inputMode="url"
+                    autoFocus
+                    required
+                    placeholder="https://…"
+                    autoComplete="off"
+                    spellCheck={false}
+                  />
+                  <button type="submit" className="board-empty-action">
+                    Add
+                  </button>
+                </div>
+                {linkError && (
+                  <p className="board-link-error" role="alert">
+                    {linkError}
+                  </p>
+                )}
+              </form>
+            )}
+          </Dialog>
+        </Popover>
+      </DialogTrigger>
       {!isMobile && (
         <button
           type="button"
@@ -295,6 +398,8 @@ function BoardCanvas({ doc, title }: { doc: Y.Doc; title: string }) {
         }}
         theme={theme}
         onChange={onChange}
+        validateEmbeddable={(link) => parseSafeUrl(link) !== null}
+        renderEmbeddable={(element) => <CardView element={element} apiRef={apiRef} />}
         renderTopRightUI={renderTopRightUI}
         name={title}
         UIOptions={{
@@ -324,12 +429,18 @@ function BoardCanvas({ doc, title }: { doc: Y.Doc; title: string }) {
                 <span className="board-swatch" style={{ background: NOTE_COLORS[0].fill }} aria-hidden="true" />
                 Add a note
               </button>
+              <button type="button" className="board-empty-action" onClick={pasteHelp}>
+                <span aria-hidden="true">🔗</span>Paste a link
+              </button>
               <button type="button" className="board-empty-action" onClick={startDrawing}>
                 <span aria-hidden="true">✎</span>
                 Start drawing
               </button>
             </div>
-            <p className="board-empty-hint">Or double-click anywhere on the board to type. Press N for a new note.</p>
+            <p className="board-empty-hint">
+              Paste a YouTube or Vimeo link to add a video you can play right here. Double-click anywhere to type, or
+              press N for a note.
+            </p>
           </div>
         </div>
       )}

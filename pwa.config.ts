@@ -114,6 +114,16 @@ export const pwaOptions: Partial<VitePWAOptions> = {
           expiration: { maxEntries: 30, maxAgeSeconds: 60 * 60 * 24 * 365 },
         },
       },
+      {
+        // Video thumbnails (YouTube/Vimeo image hosts only): cached so cards still show them offline.
+        urlPattern: ({ url }) => url.origin === "https://i.ytimg.com" || url.origin === "https://i.vimeocdn.com",
+        handler: "CacheFirst",
+        options: {
+          cacheName: "video-thumbnails",
+          cacheableResponse: { statuses: [0, 200] },
+          expiration: { maxEntries: 300, maxAgeSeconds: 60 * 60 * 24 * 30 },
+        },
+      },
     ],
   },
 };
