@@ -1,7 +1,11 @@
 import "./assetPath"; // must stay first: sets the font path before Excalidraw loads
 import "@excalidraw/excalidraw/index.css";
 import { CaptureUpdateAction, Excalidraw, MainMenu, reconcileElements } from "@excalidraw/excalidraw";
-import type { OrderedExcalidrawElement } from "@excalidraw/excalidraw/element/types";
+import type {
+  ExcalidrawEmbeddableElement,
+  NonDeleted,
+  OrderedExcalidrawElement,
+} from "@excalidraw/excalidraw/element/types";
 import type { RemoteExcalidrawElement } from "@excalidraw/excalidraw/data/reconcile";
 import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -10,11 +14,14 @@ import * as Y from "yjs";
 import { setFocusMode, toggleFocusMode, useBoardLayout } from "../workspace/boardLayout";
 import { boardDocName } from "../workspace/docNames";
 import { openDoc, type OpenDoc } from "../workspace/openDoc";
-import { addPasted } from "./cards";
+import { useTags } from "../workspace/useTags";
+import { addPasted, cardData } from "./cards";
+import { CardDetails } from "./CardDetails";
 import { CardView } from "./CardView";
 import { addNote, NOTE_COLORS, type NoteColorId } from "./notes";
 import { isExcalidrawClipboard, routePaste } from "./pasteRoute";
 import { LOCAL_ORIGIN, elementsMap, liveCount, readElements, writeElements } from "./sceneSync";
+import { TagsContext } from "./tagsContext";
 import { parseCardUrl, parseSafeUrl } from "./urls";
 import { useSiteTheme } from "./useSiteTheme";
 import "./board.css";
@@ -28,10 +35,11 @@ export interface BoardProps {
   wsId: string;
   folderId: string;
   title: string;
+  wsDoc: Y.Doc;
 }
 
 /** One free-flow Excalidraw canvas per folder, stored in its own Yjs doc (`board:<wsId>:<folderId>`), offline-first and synced across tabs. */
-export default function Board({ wsId, folderId, title }: BoardProps) {
+export default function Board({ wsId, folderId, title, wsDoc }: BoardProps) {
   const [handle, setHandle] = useState<OpenDoc | null>(null);
   const [failed, setFailed] = useState(false);
 
@@ -62,7 +70,7 @@ export default function Board({ wsId, folderId, title }: BoardProps) {
       </div>
     );
   }
-  return <BoardCanvas key={folderId} doc={handle.doc} title={title} />;
+  return <BoardCanvas key={folderId} doc={handle.doc} title={title} wsDoc={wsDoc} />;
 }
 
 /** True when the key press belongs to a text field (sidebar inputs, dialogs, Excalidraw's own text editor). */
@@ -75,7 +83,8 @@ function isTyping(el: HTMLElement): boolean {
   );
 }
 
-function BoardCanvas({ doc, title }: { doc: Y.Doc; title: string }) {
+function BoardCanvas({ doc, title, wsDoc }: { doc: Y.Doc; title: string; wsDoc: Y.Doc }) {
+  const tags = useTags(wsDoc);
   const theme = useSiteTheme();
   const apiRef = useRef<ExcalidrawImperativeAPI | null>(null);
   const [initialElements] = useState(() => readElements<OrderedExcalidrawElement>(doc));
@@ -87,6 +96,14 @@ function BoardCanvas({ doc, title }: { doc: Y.Doc; title: string }) {
   const { focus } = useBoardLayout();
   const full = count >= LIMIT;
   const [linkError, setLinkError] = useState<string | null>(null);
+  const [selectedCard, setSelectedCard] = useState<NonDeleted<ExcalidrawEmbeddableElement> | null>(null);
+  const selectedRef = useRef<NonDeleted<ExcalidrawEmbeddableElement> | null>(null);
+
+  const closeDetails = () =>
+    apiRef.current?.updateScene({
+      appState: { selectedElementIds: {} },
+      captureUpdate: CaptureUpdateAction.NEVER,
+    });
 
   const addLink = (raw: string): boolean => {
     const api = apiRef.current;
@@ -144,7 +161,10 @@ function BoardCanvas({ doc, title }: { doc: Y.Doc; title: string }) {
     if (api) writeElements(doc, api.getSceneElementsIncludingDeleted());
   }, [doc]);
 
-  const onChange = (elements: readonly OrderedExcalidrawElement[], appState: { activeTool: { type: string } }) => {
+  const onChange = (
+    elements: readonly OrderedExcalidrawElement[],
+    appState: { activeTool: { type: string }; selectedElementIds?: Readonly<Record<string, true>> },
+  ) => {
     if (!toolPicked && appState.activeTool.type !== "selection") setToolPicked(true);
     const live = liveCount(elements);
     if (live !== count) setCount(live);
@@ -159,6 +179,25 @@ function BoardCanvas({ doc, title }: { doc: Y.Doc; title: string }) {
     } else if (live <= LIMIT) {
       limitToastShown.current = false;
     }
+
+    const selIds = Object.keys(appState.selectedElementIds ?? {});
+    let nextCard: NonDeleted<ExcalidrawEmbeddableElement> | null = null;
+    if (selIds.length === 1) {
+      const el = elements.find((e) => e.id === selIds[0]);
+      if (el && !el.isDeleted && el.type === "embeddable" && cardData(el) !== null) {
+        nextCard = el as NonDeleted<ExcalidrawEmbeddableElement>;
+      }
+    }
+    const prev = selectedRef.current;
+    if (
+      (!prev && nextCard) ||
+      (prev && !nextCard) ||
+      (prev && nextCard && (prev.id !== nextCard.id || prev.version !== nextCard.version))
+    ) {
+      selectedRef.current = nextCard;
+      setSelectedCard(nextCard);
+    }
+
     if (timer.current === null) timer.current = window.setTimeout(flush, WRITE_DELAY_MS);
   };
 
@@ -385,70 +424,81 @@ function BoardCanvas({ doc, title }: { doc: Y.Doc; title: string }) {
   );
 
   return (
-    <div className="board" data-theme={theme} ref={containerRef}>
-      <Excalidraw
-        excalidrawAPI={(api) => {
-          apiRef.current = api;
-        }}
-        initialData={{
-          elements: initialElements,
-          // Excalidraw renders dark mode by inverting the canvas, so the stored background stays white in both themes.
-          appState: { theme },
-          scrollToContent: true,
-        }}
-        theme={theme}
-        onChange={onChange}
-        validateEmbeddable={(link) => parseSafeUrl(link) !== null}
-        renderEmbeddable={(element) => <CardView element={element} apiRef={apiRef} />}
-        renderTopRightUI={renderTopRightUI}
-        name={title}
-        UIOptions={{
-          canvasActions: {
-            loadScene: false,
-            saveToActiveFile: false,
-            export: false,
-            saveAsImage: false,
-            clearCanvas: false,
-            toggleTheme: null,
-            changeViewBackgroundColor: true,
-          },
-          tools: { image: false },
-        }}
-      >
-        <MainMenu>
-          <MainMenu.DefaultItems.ChangeCanvasBackground />
-          <MainMenu.DefaultItems.Help />
-        </MainMenu>
-      </Excalidraw>
-      {count === 0 && !toolPicked && (
-        <div className="board-empty">
-          <div className="board-empty-card">
-            <h3 className="board-empty-title">Start planning {title}</h3>
-            <div className="board-empty-actions">
-              <button type="button" className="board-empty-action" onClick={() => newNote(noteColor)}>
-                <span className="board-swatch" style={{ background: NOTE_COLORS[0].fill }} aria-hidden="true" />
-                Add a note
-              </button>
-              <button type="button" className="board-empty-action" onClick={pasteHelp}>
-                <span aria-hidden="true">🔗</span>Paste a link
-              </button>
-              <button type="button" className="board-empty-action" onClick={startDrawing}>
-                <span aria-hidden="true">✎</span>
-                Start drawing
-              </button>
+    <TagsContext.Provider value={tags}>
+      <div className="board" data-theme={theme} ref={containerRef}>
+        <Excalidraw
+          excalidrawAPI={(api) => {
+            apiRef.current = api;
+          }}
+          initialData={{
+            elements: initialElements,
+            // Excalidraw renders dark mode by inverting the canvas, so the stored background stays white in both themes.
+            appState: { theme },
+            scrollToContent: true,
+          }}
+          theme={theme}
+          onChange={onChange}
+          validateEmbeddable={(link) => parseSafeUrl(link) !== null}
+          renderEmbeddable={(element) => <CardView element={element} apiRef={apiRef} />}
+          renderTopRightUI={renderTopRightUI}
+          name={title}
+          UIOptions={{
+            canvasActions: {
+              loadScene: false,
+              saveToActiveFile: false,
+              export: false,
+              saveAsImage: false,
+              clearCanvas: false,
+              toggleTheme: null,
+              changeViewBackgroundColor: true,
+            },
+            tools: { image: false },
+          }}
+        >
+          <MainMenu>
+            <MainMenu.DefaultItems.ChangeCanvasBackground />
+            <MainMenu.DefaultItems.Help />
+          </MainMenu>
+        </Excalidraw>
+        {selectedCard && (
+          <CardDetails
+            key={selectedCard.id}
+            element={selectedCard}
+            apiRef={apiRef}
+            wsDoc={wsDoc}
+            onClose={closeDetails}
+          />
+        )}
+        {count === 0 && !toolPicked && (
+          <div className="board-empty">
+            <div className="board-empty-card">
+              <h3 className="board-empty-title">Start planning {title}</h3>
+              <div className="board-empty-actions">
+                <button type="button" className="board-empty-action" onClick={() => newNote(noteColor)}>
+                  <span className="board-swatch" style={{ background: NOTE_COLORS[0].fill }} aria-hidden="true" />
+                  Add a note
+                </button>
+                <button type="button" className="board-empty-action" onClick={pasteHelp}>
+                  <span aria-hidden="true">🔗</span>Paste a link
+                </button>
+                <button type="button" className="board-empty-action" onClick={startDrawing}>
+                  <span aria-hidden="true">✎</span>
+                  Start drawing
+                </button>
+              </div>
+              <p className="board-empty-hint">
+                Paste a YouTube or Vimeo link to add a video you can play right here. Double-click anywhere to type, or
+                press N for a note.
+              </p>
             </div>
-            <p className="board-empty-hint">
-              Paste a YouTube or Vimeo link to add a video you can play right here. Double-click anywhere to type, or
-              press N for a note.
-            </p>
           </div>
-        </div>
-      )}
-      {count >= WARN_AT && (
-        <p className="board-warning" role="status">
-          This board is getting big ({count} items). Subfolders keep things quick.
-        </p>
-      )}
-    </div>
+        )}
+        {count >= WARN_AT && (
+          <p className="board-warning" role="status">
+            This board is getting big ({count} items). Subfolders keep things quick.
+          </p>
+        )}
+      </div>
+    </TagsContext.Provider>
   );
 }
