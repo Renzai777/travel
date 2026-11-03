@@ -26,6 +26,17 @@ export function folderPath(wsId: string, folderId: string | null): string {
   return folderId ? `/w/${wsId}/f/${folderId}` : `/w/${wsId}`;
 }
 
+/** Board URL that scrolls to and selects one element (used by the Library). */
+export function focusPath(wsId: string, folderId: string, elementId: string): string {
+  return `${folderPath(wsId, folderId)}?focus=${encodeURIComponent(elementId)}`;
+}
+
+/** The element id from `?focus=…`, or null (Excalidraw ids are letters, digits, `_` and `-`). */
+export function focusFromSearch(search: string): string | null {
+  const id = new URLSearchParams(search).get("focus");
+  return id && /^[A-Za-z0-9_-]{1,64}$/.test(id) ? id : null;
+}
+
 /** Read and validate `#key=…` from a hash. */
 export function keyFromHash(hash: string): string | null {
   const m = /(?:^#|&)key=([A-Za-z0-9_-]{43})(?:&|$)/.exec(hash);

@@ -15,6 +15,7 @@ import { setFocusMode, toggleFocusMode, useBoardLayout } from "../workspace/boar
 import { boardDocName } from "../workspace/docNames";
 import { openDoc, type OpenDoc } from "../workspace/openDoc";
 import { useTags } from "../workspace/useTags";
+import { focusFromSearch } from "../workspace/wsRoutes";
 import { addPasted, cardData } from "./cards";
 import { CardDetails } from "./CardDetails";
 import { CardView } from "./CardView";
@@ -88,6 +89,16 @@ function BoardCanvas({ doc, title, wsDoc }: { doc: Y.Doc; title: string; wsDoc: 
   const theme = useSiteTheme();
   const apiRef = useRef<ExcalidrawImperativeAPI | null>(null);
   const [initialElements] = useState(() => readElements<OrderedExcalidrawElement>(doc));
+  // Library → board: `?focus=<elementId>` scrolls to that element and selects it once the scene is ready.
+  const [focusRequest] = useState(() => {
+    const id = focusFromSearch(window.location.search);
+    return id ? { id, found: initialElements.some((e) => e.id === id && !e.isDeleted) } : null;
+  });
+  const focusDone = useRef(false);
+  useEffect(() => {
+    // The request is read once; drop it from the address bar so Back / reload don't jump again.
+    if (focusRequest) history.replaceState(history.state, "", window.location.pathname + window.location.hash);
+  }, [focusRequest]);
   const [count, setCount] = useState(() => liveCount(initialElements));
   const limitToastShown = useRef(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -165,6 +176,25 @@ function BoardCanvas({ doc, title, wsDoc }: { doc: Y.Doc; title: string; wsDoc: 
     elements: readonly OrderedExcalidrawElement[],
     appState: { activeTool: { type: string }; selectedElementIds?: Readonly<Record<string, true>> },
   ) => {
+    if (focusRequest && !focusDone.current) {
+      const api = apiRef.current;
+      const target = focusRequest.found ? elements.find((e) => e.id === focusRequest.id && !e.isDeleted) : undefined;
+      if (api && (target || !focusRequest.found)) {
+        focusDone.current = true;
+        window.setTimeout(() => {
+          // Outside Excalidraw's own update, and after its initial "scroll to content".
+          if (target) {
+            api.scrollToContent(target, { fitToViewport: true, viewportZoomFactor: 0.6, maxZoom: 1.25, animate: true });
+            api.updateScene({
+              appState: { selectedElementIds: { [target.id]: true } },
+              captureUpdate: CaptureUpdateAction.NEVER,
+            });
+          } else {
+            api.setToast({ message: "That item isn't on this board any more.", closable: true, duration: 5000 });
+          }
+        }, 0);
+      }
+    }
     if (!toolPicked && appState.activeTool.type !== "selection") setToolPicked(true);
     const live = liveCount(elements);
     if (live !== count) setCount(live);
